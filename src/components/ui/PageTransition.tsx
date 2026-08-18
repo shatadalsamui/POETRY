@@ -8,18 +8,15 @@ export default function PageTransition({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{ type: "spring", damping: 25, stiffness: 120 }}
-        className="w-full h-full"
-        style={{ willChange: "transform, opacity" }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={pathname}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", damping: 25, stiffness: 120 }}
+      className="w-full h-full"
+      style={{ willChange: "transform, opacity" }}
+    >
+      {children}
+    </motion.div>
   );
 }
