@@ -56,6 +56,7 @@ export default function FlyingBirds() {
             width: `${b.size}px`,
             height: `${b.size}px`,
             opacity: b.opacity,
+            willChange: "transform",
           }}
           animate={{
             x: ["-10vw", "110vw"],

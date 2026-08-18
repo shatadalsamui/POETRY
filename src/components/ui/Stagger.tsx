@@ -35,20 +35,20 @@ export function StaggerContainer({ children, className, delay = 0.1 }: StaggerPr
 
 export function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     show: { 
       opacity: 1, 
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 100,
-        damping: 15
+        stiffness: 120,
+        damping: 25
       }
     },
   };
 
   return (
-    <motion.div variants={itemVariants} className={className}>
+    <motion.div variants={itemVariants} className={className} style={{ willChange: "transform, opacity" }}>
       {children}
     </motion.div>
   );

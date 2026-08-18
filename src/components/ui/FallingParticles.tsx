@@ -18,7 +18,7 @@ export default function FallingParticles() {
 
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 15 : 25; // Slightly fewer for image performance
+    const particleCount = isMobile ? 6 : 20; // Significantly fewer on mobile for smooth performance
     
     const newParticles = Array.from({ length: particleCount }).map((_, i) => {
       const isLeftSide = i % 2 === 0;
@@ -52,6 +52,7 @@ export default function FallingParticles() {
             opacity: p.opacity,
             width: `${p.size}px`,
             height: `${p.size}px`,
+            willChange: "transform",
           }}
           animate={{
             y: ["0vh", "120vh"],
