@@ -1,0 +1,33 @@
+import React from "react";
+import Divider from "@/components/ui/Divider";
+import LightboxGallery from "@/components/ui/LightboxGallery";
+
+export const metadata = {
+  title: "দীপালী সামুই | গ্যালারি",
+};
+
+export default function GalleryPage() {
+  const images = [
+    { id: 2, title: "", src: "/p2.jpg", width: 720, height: 1280 },
+    { id: 3, title: "", src: "/p3.jpg", width: 720, height: 1280 },
+  ];
+
+  return (
+    <main className="relative min-h-screen max-w-5xl mx-auto px-6 sm:px-8 py-16">
+      <section className="relative z-10 mb-20">
+        <h1 className="text-4xl font-bold tracking-tight mb-4 text-center">গ্যালারি</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-16 max-w-lg mx-auto">
+          কিছু ক্যামেরাবন্দী স্মৃতি, বই প্রকাশ এবং আরও অনেক কিছু।
+        </p>
+        
+        <LightboxGallery images={images} />
+      </section>
+      
+      <Divider />
+      
+      <footer className="text-center pb-8 pt-4 text-[var(--color-ink)] font-medium text-sm relative z-10">
+        &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
+      </footer>
+    </main>
+  );
+}
