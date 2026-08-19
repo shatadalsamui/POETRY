@@ -13,6 +13,8 @@ const notoSerifBengali = Noto_Serif_Bengali({
   weight: ["400", "500", "600", "700"],
 });
 
+import { Analytics } from "@vercel/analytics/react";
+
 export const metadata: Metadata = {
   title: "দীপালী সামুই | পরিচিতি",
   description: "দীপালী সামুই - একজন বাঙালি লেখকের পোর্টফোলিও",
@@ -32,6 +34,7 @@ export default function RootLayout({
         <KashPhoolBackground />
         <TopBar />
         {children}
+        <Analytics />
       </body>
     </html>
   );
