@@ -11,7 +11,7 @@ export default function TopBar() {
 
   const links = [
     { href: "/about", label: "পরিচিতি" },
-    { href: "/books", label: "প্রকাশিত গ্রন্থ" },
+    { href: "/books", label: "প্রকাশিত কাব্যগ্রন্থ" },
     { href: "/poems", label: "কবিতা" },
     { href: "/stories", label: "গল্প" },
     { href: "/gallery", label: "গ্যালারি" },

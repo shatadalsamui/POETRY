@@ -5,7 +5,7 @@ import Divider from "@/components/ui/Divider";
 import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
 
 export const metadata = {
-  title: "দীপালী সামুই | প্রকাশিত গ্রন্থ",
+  title: "দীপালী সামুই | প্রকাশিত কাব্যগ্রন্থ",
 };
 
 export default function BooksPage() {
@@ -13,9 +13,9 @@ export default function BooksPage() {
     <main className="relative min-h-screen max-w-6xl mx-auto px-6 sm:px-8 py-16">
       <Watermark />
       <section className="relative z-10 mb-20">
-        <h1 className="text-4xl font-bold tracking-tight mb-4 text-center">প্রকাশিত গ্রন্থ</h1>
-        <p className="text-center text-[var(--color-ink)] font-medium mb-16 max-w-lg mx-auto">
-          আমার লেখা কিছু বই, যা পাঠকদের কাছে পৌঁছেছে।
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-center">প্রকাশিত কাব্যগ্রন্থ</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-16 max-w-lg mx-auto opacity-85">
+          আমার লেখা কিছু কাব্যগ্রন্থ, যা পাঠকদের কাছে পৌঁছেছে।
         </p>
         
         <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-10">
