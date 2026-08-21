@@ -41,11 +41,11 @@ export default async function PoemReadingPage(
   const nextPoem = currentIndex < poems.length - 1 ? poems[currentIndex + 1] : null;
 
   return (
-    <main className="relative min-h-screen max-w-4xl mx-auto px-4 sm:px-8 pt-8 pb-16 md:pt-10 md:pb-20">
+    <main className="relative min-h-screen max-w-4xl mx-auto px-2.5 sm:px-8 pt-6 pb-16 md:pt-10 md:pb-20">
       <Watermark />
 
       {/* Top Breadcrumb Navigation */}
-      <div className="mb-6 relative z-10 flex items-center justify-between">
+      <div className="mb-6 px-1 relative z-10 flex items-center justify-between">
         <Link 
           href="/poems" 
           className="inline-flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-accent)] font-semibold transition-colors group text-sm sm:text-base"
@@ -58,7 +58,7 @@ export default async function PoemReadingPage(
       </div>
 
       {/* The Authentic Printed Book Page Leaf */}
-      <article className="bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] p-8 sm:p-14 md:p-20 relative overflow-hidden flex flex-col items-center">
+      <article className="bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-3.5 py-8 sm:px-14 sm:py-14 md:p-20 relative overflow-hidden flex flex-col items-center">
         
         {/* Subtle Spine Crease along left edge simulating physical book binding */}
         <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/10 via-black/3 to-transparent pointer-events-none" />
@@ -66,33 +66,33 @@ export default async function PoemReadingPage(
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
         {/* 1. Running Book Header */}
-        <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
+        <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <span className="font-semibold text-[var(--color-accent)]">দীপালী সামুই</span>
           <span className="italic hidden sm:inline">কবিতা সংকলন</span>
           <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(poem.date)}</span>
         </div>
 
         {/* 2. Poem Title */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 text-[var(--color-ink)] leading-tight text-center font-serif">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-[var(--color-ink)] leading-tight text-center font-serif">
           {poem.title}
         </h1>
 
         {/* Decorative Ornamental Divider */}
-        <div className="flex items-center gap-3 mb-12 text-[var(--color-antique-gold)] opacity-75">
+        <div className="flex items-center gap-3 mb-8 sm:mb-12 text-[var(--color-antique-gold)] opacity-75">
           <span className="w-12 h-[1px] bg-current" />
           <span className="text-xs">❦</span>
           <span className="w-12 h-[1px] bg-current" />
         </div>
         
         {/* 3. Poem Verses Body */}
-        <div className="flex flex-col items-center w-full max-w-2xl">
-          <div className="text-lg sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.6] sm:leading-[2.8] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15">
+        <div className="flex flex-col items-center w-full max-w-2xl px-1">
+          <div className="text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal">
             {poem.content}
           </div>
 
           {/* 4. Author Signature & Stamp */}
-          <div className="mt-14 pt-8 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-end self-end">
-            <span className="text-lg sm:text-xl font-serif font-semibold text-[var(--color-accent)] italic">
+          <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-end self-end">
+            <span className="text-base sm:text-xl font-serif font-semibold text-[var(--color-accent)] italic">
               — দীপালী সামুই
             </span>
           </div>
