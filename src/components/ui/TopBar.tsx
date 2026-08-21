@@ -21,23 +21,32 @@ export default function TopBar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-transparent border-b-2 border-double border-[var(--color-antique-gold)]/40 shadow-sm transition-all duration-300">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between relative">
-        {/* Lotus Motif / Logo Area */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-[var(--color-accent)] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12"
-          >
-            <path
-              d="M50 20 C52 30, 60 35, 70 40 C60 45, 52 50, 50 60 C48 50, 40 45, 30 40 C40 35, 48 30, 50 20 Z"
-              fill="currentColor"
-            />
-            <circle cx="50" cy="40" r="5" fill="#fff" />
-          </svg>
-          <span className="font-semibold text-lg tracking-wide text-[var(--color-ink)]">
+        {/* Fountain Pen Motif / Logo Area */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-full bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/50 flex items-center justify-center shadow-xs transition-all duration-500 group-hover:border-[var(--color-accent)] group-hover:shadow-[0_0_12px_rgba(152,43,27,0.2)] group-hover:scale-105">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-[var(--color-accent)] transition-transform duration-500 group-hover:rotate-12"
+            >
+              {/* Fountain Pen Nib Body */}
+              <path
+                d="M12 2.5 L17 11.5 C16.2 15 15 18.5 12 21 C9 18.5 7.8 15 7 11.5 Z"
+                fill="currentColor"
+              />
+              <path
+                d="M9.5 20 L14.5 20 L14.8 22 L9.2 22 Z"
+                fill="var(--color-antique-gold)"
+              />
+              {/* Slit & Breather Hole */}
+              <circle cx="12" cy="12" r="1.3" fill="var(--color-vintage-ivory)" />
+              <line x1="12" y1="2.5" x2="12" y2="10.7" stroke="var(--color-vintage-ivory)" strokeWidth="1" strokeLinecap="round" />
+            </svg>
+          </div>
+          <span className="font-semibold text-lg tracking-wide text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)]">
             দীপালী সামুই
           </span>
         </Link>
