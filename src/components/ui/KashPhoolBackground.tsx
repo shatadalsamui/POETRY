@@ -32,11 +32,15 @@ export default function KashPhoolBackground() {
           <AnimatePresence initial={false}>
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, scale: 1.0 }}
+              animate={{ opacity: 1, scale: 1.04 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 3, ease: "easeInOut" }}
+              transition={{
+                opacity: { duration: 3, ease: "easeInOut" },
+                scale: { duration: 10, ease: "linear" }
+              }}
               className="absolute inset-0"
+              style={{ willChange: "transform, opacity" }}
             >
               <Image
                 src={backgrounds[currentIndex]}
