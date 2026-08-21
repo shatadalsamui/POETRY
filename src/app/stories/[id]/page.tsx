@@ -28,24 +28,32 @@ export default async function StoryReadingPage(
   }
 ) {
   const params = await props.params;
-  const story = await getStoryById(params.id);
+  const stories = await getStories();
+  const currentIndex = stories.findIndex((s) => s.id === params.id);
+  const story = currentIndex !== -1 ? stories[currentIndex] : undefined;
 
   if (!story) {
     notFound();
   }
+
+  const prevStory = currentIndex > 0 ? stories[currentIndex - 1] : null;
+  const nextStory = currentIndex < stories.length - 1 ? stories[currentIndex + 1] : null;
 
   // Simple splitting by double newline to create paragraphs
   const paragraphs = story.content.split('\n\n').filter(p => p.trim() !== '');
 
   return (
     <main className="relative min-h-screen max-w-4xl mx-auto px-6 sm:px-8 pt-8 pb-16 md:pt-10 md:pb-20">
-      <div className="mb-6 relative z-10">
+      <div className="mb-6 relative z-10 flex items-center justify-between">
         <Link 
           href="/stories" 
           className="inline-flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-accent-green)] font-semibold transition-colors group"
         >
-          <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">&larr;</span> গল্পে ফিরে যান
+          <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">&larr;</span> সব গল্প
         </Link>
+        <span className="text-xs font-semibold tracking-widest text-[var(--color-accent-green)] uppercase">
+          গল্প {currentIndex + 1} / {stories.length}
+        </span>
       </div>
 
       <article className="bg-[var(--color-vintage-ivory)]/95 backdrop-blur-md p-10 md:p-20 rounded-sm shadow-[0_10px_40px_rgb(0,0,0,0.1)] border border-[var(--color-antique-gold)]/40 relative overflow-hidden flex flex-col">
@@ -80,6 +88,37 @@ export default async function StoryReadingPage(
           সমাপ্ত
         </p>
       </article>
+
+      {/* Next & Previous Story Navigation */}
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full relative z-10">
+        {prevStory ? (
+          <Link
+            href={`/stories/${prevStory.id}`}
+            className="flex flex-col p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent-green)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group"
+          >
+            <span className="text-xs font-semibold text-[var(--color-accent-green)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+              <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">←</span> পূর্ববর্তী গল্প
+            </span>
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent-green)] transition-colors line-clamp-1">
+              {prevStory.title}
+            </span>
+          </Link>
+        ) : <div className="hidden sm:block" />}
+
+        {nextStory ? (
+          <Link
+            href={`/stories/${nextStory.id}`}
+            className="flex flex-col items-end text-right p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent-green)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group sm:col-start-2"
+          >
+            <span className="text-xs font-semibold text-[var(--color-accent-green)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+              পরবর্তী গল্প <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent-green)] transition-colors line-clamp-1">
+              {nextStory.title}
+            </span>
+          </Link>
+        ) : null}
+      </div>
 
       <Divider />
       

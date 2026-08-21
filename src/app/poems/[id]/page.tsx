@@ -28,21 +28,29 @@ export default async function PoemReadingPage(
   }
 ) {
   const params = await props.params;
-  const poem = await getPoemById(params.id);
+  const poems = await getPoems();
+  const currentIndex = poems.findIndex((p) => p.id === params.id);
+  const poem = currentIndex !== -1 ? poems[currentIndex] : undefined;
 
   if (!poem) {
     notFound();
   }
 
+  const prevPoem = currentIndex > 0 ? poems[currentIndex - 1] : null;
+  const nextPoem = currentIndex < poems.length - 1 ? poems[currentIndex + 1] : null;
+
   return (
     <main className="relative min-h-screen max-w-4xl mx-auto px-6 sm:px-8 pt-8 pb-16 md:pt-10 md:pb-20">
-      <div className="mb-6 relative z-10">
+      <div className="mb-6 relative z-10 flex items-center justify-between">
         <Link 
           href="/poems" 
           className="inline-flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-accent)] font-semibold transition-colors group"
         >
-          <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">&larr;</span> কবিতায় ফিরে যান
+          <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">&larr;</span> সব কবিতা
         </Link>
+        <span className="text-xs font-semibold tracking-widest text-[var(--color-accent-green)] uppercase">
+          কবিতা {currentIndex + 1} / {poems.length}
+        </span>
       </div>
 
       <article className="bg-[var(--color-vintage-ivory)]/95 backdrop-blur-md p-10 md:p-20 rounded-sm shadow-[0_10px_40px_rgb(0,0,0,0.1)] border border-[var(--color-antique-gold)]/40 relative overflow-hidden flex flex-col items-center text-center">
@@ -74,6 +82,37 @@ export default async function PoemReadingPage(
           সমাপ্ত
         </p>
       </article>
+
+      {/* Next & Previous Navigation Bar */}
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full relative z-10">
+        {prevPoem ? (
+          <Link
+            href={`/poems/${prevPoem.id}`}
+            className="flex flex-col p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group"
+          >
+            <span className="text-xs font-semibold text-[var(--color-accent)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+              <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">←</span> পূর্ববর্তী কবিতা
+            </span>
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">
+              {prevPoem.title}
+            </span>
+          </Link>
+        ) : <div className="hidden sm:block" />}
+
+        {nextPoem ? (
+          <Link
+            href={`/poems/${nextPoem.id}`}
+            className="flex flex-col items-end text-right p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group sm:col-start-2"
+          >
+            <span className="text-xs font-semibold text-[var(--color-accent)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+              পরবর্তী কবিতা <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">→</span>
+            </span>
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">
+              {nextPoem.title}
+            </span>
+          </Link>
+        ) : null}
+      </div>
 
       <Divider />
       
