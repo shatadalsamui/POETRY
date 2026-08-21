@@ -8,8 +8,9 @@ export const metadata = {
 
 export default function GalleryPage() {
   const images = [
-    { id: 2, title: "", src: "/p2.jpg", width: 720, height: 1280 },
-    { id: 3, title: "", src: "/p3.jpg", width: 720, height: 1280 },
+    { id: 2, caption: "দুর্গাপূজা ২০২৫", src: "/p2.jpg", width: 720, height: 1280 },
+    { id: 3, caption: "কলকাতা বইমেলা ২০২৫, ধানসিড়ি প্রকাশনা", src: "/p4.jpg", width: 720, height: 1280 },
+    { id: 4, caption: "কলকাতা বইমেলা ২০২৬, নোটবুক প্রকাশনা", src: "/p3.jpg", width: 720, height: 1280 },
   ];
 
   return (
@@ -19,12 +20,12 @@ export default function GalleryPage() {
         <p className="text-center text-[var(--color-ink)] font-medium mb-16 max-w-lg mx-auto">
           কিছু ক্যামেরাবন্দী স্মৃতি, বই প্রকাশ এবং আরও অনেক কিছু।
         </p>
-        
+
         <LightboxGallery images={images} />
       </section>
-      
+
       <Divider />
-      
+
       <footer className="text-center pb-8 pt-4 text-[var(--color-ink)] font-medium text-sm relative z-10">
         &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
       </footer>
