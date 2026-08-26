@@ -12,10 +12,10 @@ export default async function StoriesPage() {
   const stories = await getStories();
 
   return (
-    <main className="relative min-h-screen max-w-5xl mx-auto px-6 sm:px-8 py-16">
-      <section className="relative z-10 mb-20">
-        <h1 className="text-4xl font-bold tracking-tight mb-4 text-center">গল্প</h1>
-        <p className="text-center text-[var(--color-ink)] font-medium mb-16 max-w-lg mx-auto">
+    <main className="relative min-h-screen max-w-5xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-16">
+      <section className="relative z-10 mb-10 sm:mb-12">
+        <h1 className="text-4xl font-bold tracking-tight mb-3 text-center">গল্প</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-6 sm:mb-8 max-w-lg mx-auto">
           জীবনের নানা রঙের গল্প, যা আমাদের চারপাশের চেনা মানুষের কথা বলে।
         </p>
         

@@ -1,0 +1,183 @@
+"use client";
+
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Poem } from "@/lib/data";
+import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
+import BookShelfCard, { BookInfo } from "@/components/ui/BookShelfCard";
+import BookReaderSidebar from "@/components/ui/BookReaderSidebar";
+import BookPoemLeaf from "@/components/ui/BookPoemLeaf";
+
+interface BooksInteractiveSectionProps {
+  jibonlataPoems: Poem[];
+  neelKuyashaPoems: Poem[];
+}
+
+export default function BooksInteractiveSection({
+  jibonlataPoems,
+  neelKuyashaPoems,
+}: BooksInteractiveSectionProps) {
+  // selectedBook: null | "jibonlata" | "neel-kuyasha"
+  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [activePoemIndex, setActivePoemIndex] = useState<number>(0);
+  const [openDrawer, setOpenDrawer] = useState<string | null>(null);
+
+  const readingContainerRef = useRef<HTMLDivElement>(null);
+
+  const booksData: Record<string, BookInfo> = {
+    jibonlata: {
+      id: "jibonlata",
+      title: "জীবনলতা",
+      publisher: "ধানসিড়ি প্রকাশনা • কলকাতা আন্তর্জাতিক বইমেলা ২০২৫",
+      coverFront: "/b11.jpg",
+      coverBack: "/b12.jpg",
+      poems: jibonlataPoems,
+    },
+    "neel-kuyasha": {
+      id: "neel-kuyasha",
+      title: "নীল কুয়াশা",
+      publisher: "নোটবুক প্রকাশনা • কলকাতা আন্তর্জাতিক বইমেলা ২০২৬",
+      coverFront: "/b21.jpg",
+      coverBack: "/b22.jpg",
+      poems: neelKuyashaPoems,
+    },
+  };
+
+  const currentBook = selectedBook ? booksData[selectedBook] : null;
+  const currentPoem = currentBook ? currentBook.poems[activePoemIndex] : null;
+
+  const scrollToPoemTop = () => {
+    if (typeof window !== "undefined" && readingContainerRef.current) {
+      const navOffset = 90;
+      const elementPosition = readingContainerRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleSelectPoem = (bookKey: string, poemIndex: number) => {
+    setSelectedBook(bookKey);
+    setActivePoemIndex(poemIndex);
+    setOpenDrawer(null);
+    setTimeout(() => {
+      scrollToPoemTop();
+    }, 120);
+  };
+
+  const handleNextPoem = () => {
+    if (currentBook && activePoemIndex < currentBook.poems.length - 1) {
+      setActivePoemIndex((prev) => prev + 1);
+      scrollToPoemTop();
+    }
+  };
+
+  const handlePrevPoem = () => {
+    if (activePoemIndex > 0) {
+      setActivePoemIndex((prev) => prev - 1);
+      scrollToPoemTop();
+    }
+  };
+
+  const handleSelectPoemFromList = (index: number) => {
+    setActivePoemIndex(index);
+    scrollToPoemTop();
+  };
+
+  const handleSwitchBook = () => {
+    const nextBookKey = selectedBook === "jibonlata" ? "neel-kuyasha" : "jibonlata";
+    setSelectedBook(nextBookKey);
+    setActivePoemIndex(0);
+    scrollToPoemTop();
+  };
+
+  return (
+    <div>
+      <AnimatePresence mode="wait">
+        {/* ========================================================================= */}
+        {/* 📚 VIEW 1: DEFAULT 2-BOOK SHELF VIEW (When no book is open for reading)  */}
+        {/* ========================================================================= */}
+        {!selectedBook && (
+          <motion.div
+            key="all-books"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.35 }}
+          >
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+              {Object.values(booksData).map((book) => (
+                <StaggerItem key={book.id}>
+                  <BookShelfCard
+                    book={book}
+                    isOpen={openDrawer === book.id}
+                    onToggleOpen={() =>
+                      setOpenDrawer(openDrawer === book.id ? null : book.id)
+                    }
+                    onSelectPoem={(poemIndex) => handleSelectPoem(book.id, poemIndex)}
+                  />
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </motion.div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* 📖 VIEW 2: SIDE-BY-SIDE SPLIT VIEW (Selected Book on Left + Poem Card on Right) */}
+        {/* ========================================================================= */}
+        {selectedBook && currentBook && currentPoem && (
+          <motion.div
+            key="reading-mode"
+            ref={readingContainerRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="w-full"
+          >
+            {/* Top Navigation Bar */}
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--color-antique-gold)]/40 relative z-10">
+              <button
+                onClick={() => setSelectedBook(null)}
+                className="inline-flex items-center gap-2 text-sm sm:text-base font-serif font-bold text-[var(--color-ink)] hover:text-[var(--color-accent)] transition-colors cursor-pointer group"
+              >
+                <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                <span>সব বই দেখুন (তালিকায় ফিরুন)</span>
+              </button>
+
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-serif text-[var(--color-accent-green)] font-semibold">
+                <span>‘{currentBook.title}’ কাব্যগ্রন্থের কবিতা পাঠ</span>
+              </div>
+            </div>
+
+            {/* Wide Side-by-Side Flex Layout */}
+            <div className="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start w-full">
+              {/* 👈 LEFT COLUMN: Selected Book Card */}
+              <BookReaderSidebar
+                currentBook={currentBook}
+                activePoemIndex={activePoemIndex}
+                onSelectPoem={handleSelectPoemFromList}
+                onSwitchBook={handleSwitchBook}
+                otherBookTitle={selectedBook === "jibonlata" ? "নীল কুয়াশা" : "জীবনলতা"}
+              />
+
+              {/* 👉 RIGHT COLUMN: Full Sized Authentic Printed Poem Card / Leaf */}
+              <div className="flex-1 w-full min-w-0">
+                <BookPoemLeaf
+                  currentBook={currentBook}
+                  currentPoem={currentPoem}
+                  activePoemIndex={activePoemIndex}
+                  totalPoems={currentBook.poems.length}
+                  onPrevPoem={handlePrevPoem}
+                  onNextPoem={handleNextPoem}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

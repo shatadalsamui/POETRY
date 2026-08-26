@@ -29,7 +29,7 @@ export default function KashPhoolBackground() {
       <div className="absolute inset-0 opacity-80 sepia-[.1]">
         <div className="relative w-full h-full [mask-image:linear-gradient(to_top,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_85%,transparent_100%)]">
           {/* AnimatePresence handles smooth crossfading of elements as they mount/unmount */}
-          <AnimatePresence initial={false}>
+          <AnimatePresence>
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 1.0 }}

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
-import Watermark from "@/components/ui/Watermark";
 
 export async function generateStaticParams() {
   const poems = await getPoems();
@@ -42,8 +41,6 @@ export default async function PoemReadingPage(
 
   return (
     <main className="relative min-h-screen max-w-4xl mx-auto px-2.5 sm:px-8 pt-6 pb-16 md:pt-10 md:pb-20">
-      <Watermark />
-
       {/* Top Breadcrumb Navigation */}
       <div className="mb-6 px-1 relative z-10 flex items-center justify-between">
         <Link 
@@ -68,7 +65,16 @@ export default async function PoemReadingPage(
         {/* 1. Running Book Header */}
         <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <span className="font-semibold text-[var(--color-accent)]">দীপালী সামুই</span>
-          <span className="italic hidden sm:inline">কবিতা সংকলন</span>
+          {poem.book ? (
+            <Link 
+              href="/books" 
+              className="italic hidden sm:inline text-[var(--color-accent-green)] hover:underline hover:text-[var(--color-accent)] transition-colors"
+            >
+              ‘{poem.book}’ কাব্যগ্রন্থ
+            </Link>
+          ) : (
+            <span className="italic hidden sm:inline">কবিতা সংকলন</span>
+          )}
           <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(poem.date)}</span>
         </div>
 

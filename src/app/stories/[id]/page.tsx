@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
-import Watermark from "@/components/ui/Watermark";
 
 export async function generateStaticParams() {
   const stories = await getStories();
@@ -45,8 +44,6 @@ export default async function StoryReadingPage(
 
   return (
     <main className="relative min-h-screen max-w-4xl mx-auto px-4 sm:px-8 pt-8 pb-16 md:pt-10 md:pb-20">
-      <Watermark />
-
       {/* Top Breadcrumb Navigation */}
       <div className="mb-6 relative z-10 flex items-center justify-between">
         <Link 

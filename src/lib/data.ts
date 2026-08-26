@@ -1,11 +1,13 @@
-import fs from 'fs';
-import path from 'path';
+import poemsData from '../../data/poems.json';
+import storiesData from '../../data/stories.json';
 
 export interface Poem {
   id: string;
   title: string;
   date: string;
   content: string;
+  book?: string;
+  bookId?: string;
 }
 
 export interface Story {
@@ -15,22 +17,17 @@ export interface Story {
   content: string;
 }
 
-const dataDir = path.join(process.cwd(), 'data');
-
 export async function getPoems(): Promise<Poem[]> {
-  const filePath = path.join(dataDir, 'poems.json');
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const poems: Poem[] = JSON.parse(fileContents);
-  
-  return poems;
+  return poemsData as Poem[];
+}
+
+export async function getPoemsByBook(bookName: string): Promise<Poem[]> {
+  const poems = await getPoems();
+  return poems.filter((poem) => poem.book === bookName || poem.bookId === bookName);
 }
 
 export async function getStories(): Promise<Story[]> {
-  const filePath = path.join(dataDir, 'stories.json');
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const stories: Story[] = JSON.parse(fileContents);
-  
-  return stories;
+  return storiesData as Story[];
 }
 
 export async function getPoemById(id: string): Promise<Poem | undefined> {

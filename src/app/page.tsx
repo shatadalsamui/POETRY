@@ -1,15 +1,12 @@
 "use client";
 
 import React from "react";
-import Watermark from "@/components/ui/Watermark";
 import Divider from "@/components/ui/Divider";
 import { motion } from "framer-motion";
 
 export default function LandingPage() {
   return (
     <main className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 sm:px-8 py-16">
-      <Watermark />
-
       <section className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto -mt-20">
         
         {/* Big Poetic Quote */}

@@ -1,15 +1,13 @@
 import React from "react";
 import Image from "next/image";
-import Watermark from "@/components/ui/Watermark";
 import Divider from "@/components/ui/Divider";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <Watermark />
+    <main className="relative min-h-screen max-w-5xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-16">
 
       <section className="relative z-10 mb-10 max-w-5xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-6 text-center">পরিচিতি</h1>
+        <h1 className="text-4xl font-bold tracking-tight mb-6 sm:mb-8 text-center">পরিচিতি</h1>
 
         {/* Vintage Parchment Paper Frame */}
         <div className="bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 rounded-sm shadow-xl p-6 sm:p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center gap-8 md:gap-10 relative overflow-hidden">

@@ -1,6 +1,5 @@
 import React from "react";
 import Divider from "@/components/ui/Divider";
-import Watermark from "@/components/ui/Watermark";
 
 export const metadata = {
   title: "দীপালী সামুই | যোগাযোগ",
@@ -8,20 +7,18 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="relative min-h-screen max-w-3xl mx-auto px-6 sm:px-8 py-16">
-      <Watermark />
-
-      <section className="relative z-10 mb-20 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-center">যোগাযোগ</h1>
-        <p className="text-center text-[var(--color-ink)] font-medium mb-12 max-w-lg mx-auto opacity-85">
+    <main className="relative min-h-screen max-w-4xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-16">
+      <section className="relative z-10 mb-10 sm:mb-12 text-center">
+        <h1 className="text-4xl font-bold tracking-tight mb-3 text-center">যোগাযোগ</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-6 sm:mb-8 max-w-lg mx-auto opacity-85">
           যেকোনো মতামত, পরামর্শ বা বই সম্পর্কিত তথ্যের জন্য যোগাযোগ করুন।
         </p>
 
-        <div className="bg-[var(--color-vintage-ivory)] p-8 sm:p-12 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl max-w-lg mx-auto relative overflow-hidden text-center group">
+        <div className="bg-[var(--color-vintage-ivory)] p-8 sm:p-12 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl max-w-2xl mx-auto relative overflow-hidden text-center group">
           {/* Decorative Crimson Side Bar matching Poems & Books */}
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12]" />
 
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-7">
             {/* Phone */}
             <div className="flex flex-col items-center">
               <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-1.5">
@@ -29,9 +26,11 @@ export default function ContactPage() {
               </span>
               <a
                 href="tel:+918900112837"
-                className="text-2xl font-bold text-[var(--color-ink)] hover:text-[var(--color-accent)] transition-colors inline-block tracking-wide"
+                className="flex items-center justify-center gap-2.5 sm:gap-4 text-lg sm:text-2xl font-bold text-[var(--color-ink)] hover:text-[var(--color-accent)] transition-colors tracking-wide whitespace-nowrap"
               >
-                +91 8900112837
+                <span className="whitespace-nowrap">+91 8900112837</span>
+                <span className="text-base sm:text-lg font-serif text-[var(--color-antique-gold)] font-bold">|</span>
+                <span className="font-serif text-lg sm:text-2xl text-[var(--color-accent)] whitespace-nowrap">+৯১ ৮৯০০১১২৮৩৭</span>
               </a>
             </div>
 
@@ -48,14 +47,12 @@ export default function ContactPage() {
               </a>
             </div>
 
-            <Divider className="my-6 opacity-60" />
-
             {/* Social Links */}
-            <div>
-              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-3 block">
+            <div className="pt-5 border-t border-[var(--color-antique-gold)]/30">
+              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-2.5 block">
                 সামাজিক মাধ্যম
               </span>
-              <div className="flex justify-center mt-2">
+              <div className="flex justify-center">
                 <a
                   href="https://www.facebook.com/profile.php?id=61558047953743"
                   target="_blank"
