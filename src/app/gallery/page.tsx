@@ -14,21 +14,22 @@ export default function GalleryPage() {
   ];
 
   return (
-    <main className="relative min-h-screen max-w-5xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-16">
-      <section className="relative z-10 mb-10 sm:mb-12">
-        <h1 className="text-4xl font-bold tracking-tight mb-3 text-center">গ্যালারি</h1>
-        <p className="text-center text-[var(--color-ink)] font-medium mb-6 sm:mb-8 max-w-lg mx-auto">
+    <main className="relative max-w-5xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-4 min-h-full flex flex-col justify-between">
+      <section className="relative z-10 mb-4 sm:mb-5">
+        <h1 className="text-4xl font-bold tracking-tight mb-2.5 text-center">গ্যালারি</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-4 sm:mb-5 max-w-lg mx-auto">
           কিছু ক্যামেরাবন্দী স্মৃতি, বই প্রকাশ এবং আরও অনেক কিছু।
         </p>
 
         <LightboxGallery images={images} />
       </section>
 
-      <Divider />
-
-      <footer className="text-center pb-8 pt-4 text-[var(--color-ink)] font-medium text-sm relative z-10">
-        &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
-      </footer>
+      <div className="mt-auto pt-2">
+        <Divider />
+        <footer className="text-center pb-2 pt-1 text-[var(--color-ink)] font-medium text-xs sm:text-sm relative z-10 opacity-80">
+          &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
+        </footer>
+      </div>
     </main>
   );
 }

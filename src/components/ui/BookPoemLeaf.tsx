@@ -3,6 +3,7 @@
 import React from "react";
 import { Poem, toBengaliNumerals, formatBengaliDate } from "@/lib/data";
 import { BookInfo } from "./BookShelfCard";
+import ShareButton from "@/components/ui/ShareButton";
 
 interface BookPoemLeafProps {
   currentBook: BookInfo;
@@ -22,11 +23,16 @@ export default function BookPoemLeaf({
   onNextPoem,
 }: BookPoemLeafProps) {
   return (
-    <article className="w-full bg-[#fbf9f4] border-2 border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-6 py-10 sm:px-14 sm:py-16 md:px-20 md:py-20 relative overflow-hidden flex flex-col items-center min-h-[640px] justify-between">
+    <article className="w-full bg-[#fbf9f4] border-2 border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-6 pt-6 pb-10 sm:px-14 sm:pt-8 sm:pb-16 md:px-20 md:pt-10 md:pb-20 relative overflow-hidden flex flex-col items-center min-h-[640px] justify-between">
       {/* Subtle Spine Crease shadow along left edge */}
       <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/10 via-black/3 to-transparent pointer-events-none hidden sm:block" />
       {/* Fine Crimson Edge Accent */}
       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
+
+      {/* Top Action Row: Share Button */}
+      <div className="w-full flex items-center justify-end mb-3 sm:mb-4 relative z-10">
+        <ShareButton path={`/poems/${currentPoem.id}`} />
+      </div>
 
       {/* 1. Running Book Header */}
       <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">

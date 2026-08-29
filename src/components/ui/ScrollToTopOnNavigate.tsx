@@ -14,6 +14,10 @@ export default function ScrollToTopOnNavigate() {
         left: 0,
         behavior: "instant" as ScrollBehavior,
       });
+      const scrollContainer = document.getElementById("main-scroll-container");
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
       // Fallback in case of layout paint delay
       const timer = setTimeout(() => {
         window.scrollTo({
@@ -21,6 +25,9 @@ export default function ScrollToTopOnNavigate() {
           left: 0,
           behavior: "instant" as ScrollBehavior,
         });
+        if (scrollContainer) {
+          scrollContainer.scrollTop = 0;
+        }
       }, 50);
       return () => clearTimeout(timer);
     }

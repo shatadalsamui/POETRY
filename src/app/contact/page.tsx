@@ -7,21 +7,21 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="relative min-h-screen max-w-4xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-16">
-      <section className="relative z-10 mb-10 sm:mb-12 text-center">
-        <h1 className="text-4xl font-bold tracking-tight mb-3 text-center">যোগাযোগ</h1>
-        <p className="text-center text-[var(--color-ink)] font-medium mb-6 sm:mb-8 max-w-lg mx-auto opacity-85">
+    <main className="relative max-w-4xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-4 min-h-full flex flex-col justify-between">
+      <section className="relative z-10 mb-4 sm:mb-6 text-center">
+        <h1 className="text-4xl font-bold tracking-tight mb-2 sm:mb-3 text-center">যোগাযোগ</h1>
+        <p className="text-center text-[var(--color-ink)] font-medium mb-4 sm:mb-6 max-w-lg mx-auto opacity-85">
           যেকোনো মতামত, পরামর্শ বা বই সম্পর্কিত তথ্যের জন্য যোগাযোগ করুন।
         </p>
 
-        <div className="bg-[var(--color-vintage-ivory)] p-8 sm:p-12 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl max-w-2xl mx-auto relative overflow-hidden text-center group">
+        <div className="bg-[var(--color-vintage-ivory)] p-6 sm:p-8 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl max-w-2xl mx-auto relative overflow-hidden text-center group">
           {/* Decorative Crimson Side Bar matching Poems & Books */}
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12]" />
 
-          <div className="space-y-6 sm:space-y-7">
+          <div className="space-y-4 sm:space-y-5">
             {/* Phone */}
             <div className="flex flex-col items-center">
-              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-1.5">
+              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-1">
                 ফোন নম্বর
               </span>
               <a
@@ -36,7 +36,7 @@ export default function ContactPage() {
 
             {/* Email */}
             <div className="flex flex-col items-center">
-              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-1.5">
+              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-1">
                 ইমেইল ঠিকানা
               </span>
               <a
@@ -48,8 +48,8 @@ export default function ContactPage() {
             </div>
 
             {/* Social Links */}
-            <div className="pt-5 border-t border-[var(--color-antique-gold)]/30">
-              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-2.5 block">
+            <div className="pt-3 border-t border-[var(--color-antique-gold)]/30">
+              <span className="text-xs font-semibold text-[var(--color-accent-green)] uppercase tracking-widest mb-2 block">
                 সামাজিক মাধ্যম
               </span>
               <div className="flex justify-center">
@@ -57,7 +57,7 @@ export default function ContactPage() {
                   href="https://www.facebook.com/profile.php?id=61558047953743"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-6 py-2.5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/60 rounded-sm text-[var(--color-ink)] font-medium hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-all hover:-translate-y-0.5 shadow-xs group/fb"
+                  className="inline-flex items-center gap-2.5 px-6 py-2 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/60 rounded-sm text-[var(--color-ink)] font-medium hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-all hover:-translate-y-0.5 shadow-xs group/fb text-sm sm:text-base"
                 >
                   <svg
                     width="18"
@@ -76,9 +76,12 @@ export default function ContactPage() {
         </div>
       </section>
       
-      <footer className="text-center pb-8 pt-4 text-[var(--color-ink)] font-medium text-sm relative z-10">
-        &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
-      </footer>
+      <div className="mt-auto pt-2">
+        <Divider />
+        <footer className="text-center pb-2 pt-1 text-[var(--color-ink)] font-medium text-xs sm:text-sm relative z-10 opacity-80">
+          &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
+        </footer>
+      </div>
     </main>
   );
 }

@@ -15,7 +15,10 @@ body {
 }
 
 @media (pointer: fine) {
-  body, a, button {
+
+  body,
+  a,
+  button {
     cursor: none !important;
   }
 }
@@ -24,17 +27,21 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--color-vintage-ivory);
   border-left: 1px solid rgba(179, 139, 77, 0.2);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-antique-gold);
   border-radius: 5px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-accent);
 }
+
 /* For Firefox */
 * {
   scrollbar-width: thin;
@@ -42,14 +49,31 @@ body {
 }
 
 @keyframes sway {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(2deg); }
-  75% { transform: rotate(-2deg); }
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(2deg);
+  }
+
+  75% {
+    transform: rotate(-2deg);
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .animate-sway {
@@ -61,8 +85,18 @@ body {
   animation: float 4s ease-in-out infinite;
 }
 
-.stagger-1 { animation-delay: 100ms; }
-.stagger-2 { animation-delay: 200ms; }
-.stagger-3 { animation-delay: 300ms; }
-.stagger-4 { animation-delay: 400ms; }
+.stagger-1 {
+  animation-delay: 100ms;
+}
 
+.stagger-2 {
+  animation-delay: 200ms;
+}
+
+.stagger-3 {
+  animation-delay: 300ms;
+}
+
+.stagger-4 {
+  animation-delay: 400ms;
+}

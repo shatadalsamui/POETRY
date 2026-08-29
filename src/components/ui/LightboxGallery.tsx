@@ -31,14 +31,14 @@ export default function LightboxGallery({ images }: LightboxGalleryProps) {
               onClick={() => setSelectedImage(img)}
               className="relative group overflow-hidden rounded-sm bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 break-inside-avoid cursor-pointer flex flex-col"
             >
-              <div className="relative overflow-hidden cursor-zoom-in">
+              <div className="relative overflow-hidden cursor-zoom-in aspect-[3/4] max-h-[50vh]">
                 <Image 
                   src={img.src} 
                   alt={img.caption || img.title || "গ্যালারি চিত্র"}
                   width={img.width}
                   height={img.height}
                   priority={index < 3}
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />

@@ -59,16 +59,14 @@ export default function TopBar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative font-semibold text-base md:text-lg tracking-wide transition-colors duration-300 py-2 ${
-                  isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] font-medium hover:text-[var(--color-accent)]"
-                }`}
+                className={`relative font-semibold text-base md:text-lg tracking-wide transition-colors duration-300 py-2 ${isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] font-medium hover:text-[var(--color-accent)]"
+                  }`}
               >
                 {link.label}
                 {/* Active Indicator / Hover Underline */}
                 <span
-                  className={`absolute left-0 right-0 bottom-0 h-[3px] rounded-full bg-[var(--color-accent)] transform origin-left transition-transform duration-300 ${
-                    isActive ? "scale-x-100 bg-[var(--color-accent-green)]" : "scale-x-0 group-hover:scale-x-100"
-                  }`}
+                  className={`absolute left-0 right-0 bottom-0 h-[3px] rounded-full bg-[var(--color-accent)] transform origin-left transition-transform duration-300 ${isActive ? "scale-x-100 bg-[var(--color-accent-green)]" : "scale-x-0 group-hover:scale-x-100"
+                    }`}
                 />
               </Link>
             );
@@ -77,7 +75,7 @@ export default function TopBar() {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center">
-          <button 
+          <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="text-[var(--color-ink)] font-medium hover:text-[var(--color-accent)] focus:outline-none"
             aria-label="Toggle menu"
@@ -88,7 +86,7 @@ export default function TopBar() {
               </svg>
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
           </button>
@@ -113,9 +111,8 @@ export default function TopBar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block py-3 font-semibold text-lg border-b border-[var(--color-antique-gold)]/20 last:border-b-0 transition-colors ${
-                      isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] hover:text-[var(--color-accent)]"
-                    }`}
+                    className={`block py-3 font-semibold text-lg border-b border-[var(--color-antique-gold)]/20 last:border-b-0 transition-colors ${isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] hover:text-[var(--color-accent)]"
+                      }`}
                   >
                     {link.label}
                   </Link>

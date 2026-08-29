@@ -29,54 +29,54 @@ export default function BookShelfCard({
   onSelectPoem,
 }: BookShelfCardProps) {
   return (
-    <div className="flex flex-col items-center group bg-[var(--color-vintage-ivory)] p-6 sm:p-8 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl h-full relative overflow-hidden">
+    <div className="flex flex-col items-center group bg-[var(--color-vintage-ivory)] p-6 sm:p-7 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl relative overflow-hidden">
       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-80" />
 
       {/* Front and Back Covers */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-8 w-full relative z-10">
-        <div className="relative w-44 sm:w-48 h-60 sm:h-64 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-[var(--color-antique-gold)]/40 flex-shrink-0 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgb(179,139,77,0.25)]">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-5 w-full relative z-10">
+        <div className="relative w-44 sm:w-48 md:w-52 h-62 sm:h-68 md:h-70 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-[var(--color-antique-gold)]/40 flex-shrink-0 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgb(179,139,77,0.25)]">
           <Image
             src={book.coverFront}
             alt={`${book.title} প্রচ্ছদ`}
             fill
             priority
             className="object-cover"
-            sizes="192px"
+            sizes="208px"
           />
           <div className="absolute left-0 inset-y-0 w-3 bg-gradient-to-r from-black/40 via-black/10 to-transparent pointer-events-none" />
         </div>
-        <div className="relative w-44 sm:w-48 h-60 sm:h-64 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-[var(--color-antique-gold)]/40 flex-shrink-0 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgb(179,139,77,0.25)]">
+        <div className="relative w-44 sm:w-48 md:w-52 h-62 sm:h-68 md:h-70 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-[var(--color-antique-gold)]/40 flex-shrink-0 overflow-hidden transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgb(179,139,77,0.25)]">
           <Image
             src={book.coverBack}
             alt={`${book.title} ব্যাক কভার`}
             fill
             priority
             className="object-cover"
-            sizes="192px"
+            sizes="208px"
           />
           <div className="absolute right-0 inset-y-0 w-3 bg-gradient-to-l from-black/40 via-black/10 to-transparent pointer-events-none" />
         </div>
       </div>
 
       {/* Book Details */}
-      <div className="text-center w-full relative z-10 mb-6">
-        <h3 className="text-3xl font-bold mb-2 text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)] font-serif">
+      <div className="text-center w-full relative z-10 mb-3.5">
+        <h3 className="text-2xl sm:text-3xl font-bold mb-1.5 text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)] font-serif">
           {book.title}
         </h3>
-        <p className="text-sm font-semibold text-[var(--color-accent-green)] tracking-wider mb-1">
+        <p className="text-sm font-semibold text-[var(--color-accent-green)] tracking-wider mb-0.5">
           {book.publisher}
         </p>
-        <p className="text-base font-semibold italic text-[var(--color-ink)]/75 font-serif">
+        <p className="text-sm sm:text-base font-semibold italic text-[var(--color-ink)]/75 font-serif">
           — দীপালী সামুই
         </p>
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full mt-2 pt-5 border-t border-[var(--color-antique-gold)]/30 relative z-10 space-y-3">
+      <div className="w-full mt-1 pt-3.5 border-t border-[var(--color-antique-gold)]/30 relative z-10 space-y-2.5">
         {/* Collapsible Dropdown for 5 Poems */}
         <button
           onClick={onToggleOpen}
-          className="w-full flex items-center justify-between px-5 py-3.5 rounded-sm bg-[#fbf9f4] hover:bg-white border border-[var(--color-antique-gold)]/40 shadow-2xs hover:shadow-xs transition-all duration-300 group/btn cursor-pointer"
+          className="w-full flex items-center justify-between px-4 sm:px-5 py-2.5 sm:py-3 rounded-sm bg-[#fbf9f4] hover:bg-white border border-[var(--color-antique-gold)]/40 shadow-2xs hover:shadow-xs transition-all duration-300 group/btn cursor-pointer"
           aria-expanded={isOpen}
         >
           <span className="flex items-center gap-2.5 text-sm sm:text-base font-serif font-bold text-[var(--color-ink)] group-hover/btn:text-[var(--color-accent)] transition-colors">

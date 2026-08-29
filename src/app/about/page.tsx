@@ -4,19 +4,19 @@ import Divider from "@/components/ui/Divider";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen max-w-5xl mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-16">
+    <main className="relative max-w-[960px] mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-3 min-h-full flex flex-col justify-between">
 
-      <section className="relative z-10 mb-10 max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold tracking-tight mb-6 sm:mb-8 text-center">পরিচিতি</h1>
+      <section className="relative z-10 mb-6 sm:mb-8 max-w-[960px] mx-auto w-full">
+        <h1 className="text-4xl font-bold tracking-tight mb-5 sm:mb-6 text-center">পরিচিতি</h1>
 
         {/* Vintage Parchment Paper Frame */}
-        <div className="bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 rounded-sm shadow-xl p-6 sm:p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center gap-8 md:gap-10 relative overflow-hidden">
+        <div className="bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 rounded-sm shadow-xl p-6 sm:p-7 md:p-8 flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-8 relative overflow-hidden">
           {/* Decorative Crimson Accent Bar */}
           <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12]" />
           
           {/* Left Column: Portrait & Calligraphic Signature */}
-          <div className="flex flex-col items-center shrink-0 w-56 sm:w-64 md:w-68">
-            <div className="relative w-48 sm:w-52 md:w-56 shadow-xl border-4 border-white rotate-[-1.5deg] hover:rotate-0 transition-transform duration-700">
+          <div className="flex flex-col items-center shrink-0 w-56 sm:w-60 md:w-64">
+            <div className="relative w-48 sm:w-52 md:w-56 shadow-xl border-3 border-white rotate-[-1.5deg] hover:rotate-0 transition-transform duration-700">
               <img
                 src="/p1.jpg"
                 alt="দীপালী সামুই"
@@ -25,13 +25,13 @@ export default function Home() {
             </div>
 
             {/* Calligraphic Author Signature & Stamp under Photo */}
-            <div className="pt-5 mt-4 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-center text-center w-full">
+            <div className="pt-4 mt-4 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-center text-center w-full">
               <div className="flex items-center gap-2">
-                <span className="font-serif italic text-2xl md:text-3xl text-[var(--color-accent)] tracking-wide font-bold drop-shadow-xs">
+                <span className="font-serif italic text-2xl sm:text-3xl md:text-[30px] text-[var(--color-accent)] tracking-wide font-bold drop-shadow-xs">
                   দীপালী সামুই
                 </span>
                 {/* Vintage Ink Flourish */}
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-[var(--color-antique-gold)] opacity-85 shrink-0">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-[var(--color-antique-gold)] opacity-85 shrink-0">
                   <path d="M12 2.5L16 10C15.5 13 14.5 16 12 18.5C9.5 16 8.5 13 8 10L12 2.5Z" fill="currentColor" />
                   <circle cx="12" cy="9" r="1" fill="#fff" />
                   <path d="M4 21C8 19 16 19 20 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -41,7 +41,7 @@ export default function Home() {
           </div>
           
           {/* Right Column: Seamless Flowing Narrative Paragraphs */}
-          <div className="flex-1 space-y-3.5 text-left font-serif text-[var(--color-ink)] text-sm sm:text-base leading-relaxed">
+          <div className="flex-1 space-y-3.5 sm:space-y-4 text-left font-serif text-[var(--color-ink)] text-base sm:text-[17px] leading-relaxed">
             <p className="text-justify font-medium">
               সবুজে ঘেরা পূর্ব বর্ধমান জেলার এক শান্ত গ্রাম্য পরিবেশে লেখিকার জন্ম ও বেড়ে ওঠা। অক্ষরের প্রথম পাঠ মায়ের আদরে। মায়ের মুখেই প্রথম কবিতার সুর শোনা। সেই সুরই কখন যেন তাঁর বুকের গভীরে বুনে দিয়েছিল শব্দ আর ছন্দের প্রতি চিরন্তন ভালোবাসা।
             </p>
@@ -59,11 +59,12 @@ export default function Home() {
         </div>
       </section>
 
-      <Divider />
-      
-      <footer className="text-center pb-8 pt-4 text-[var(--color-ink)] font-medium text-sm relative z-10">
-        &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
-      </footer>
+      <div className="mt-auto pt-2">
+        <Divider />
+        <footer className="text-center pb-2 pt-1 text-[var(--color-ink)] font-medium text-xs sm:text-sm relative z-10 opacity-80">
+          &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
+        </footer>
+      </div>
     </main>
   );
 }

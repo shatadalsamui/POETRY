@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Poem } from "@/lib/data";
 import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
@@ -46,25 +46,43 @@ export default function BooksInteractiveSection({
   const currentBook = selectedBook ? booksData[selectedBook] : null;
   const currentPoem = currentBook ? currentBook.poems[activePoemIndex] : null;
 
-  const scrollToPoemTop = () => {
-    if (typeof window !== "undefined" && readingContainerRef.current) {
-      const navOffset = 90;
-      const elementPosition = readingContainerRef.current.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+  const scrollToPoemTop = (instant = false) => {
+    if (typeof window !== "undefined") {
       window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
+        top: 0,
+        behavior: instant ? ("instant" as ScrollBehavior) : "smooth",
       });
+      const scrollContainer = document.getElementById("main-scroll-container");
+      if (scrollContainer) {
+        scrollContainer.scrollTo({
+          top: 0,
+          behavior: instant ? ("instant" as ScrollBehavior) : "smooth",
+        });
+      }
     }
   };
+
+  useEffect(() => {
+    if (selectedBook !== null) {
+      scrollToPoemTop(true);
+      const timer = setTimeout(() => {
+        scrollToPoemTop(false);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [activePoemIndex, selectedBook]);
 
   const handleSelectPoem = (bookKey: string, poemIndex: number) => {
     setSelectedBook(bookKey);
     setActivePoemIndex(poemIndex);
     setOpenDrawer(null);
+    scrollToPoemTop(true);
     setTimeout(() => {
-      scrollToPoemTop();
-    }, 120);
+      scrollToPoemTop(false);
+    }, 50);
+    setTimeout(() => {
+      scrollToPoemTop(false);
+    }, 360);
   };
 
   const handleNextPoem = () => {
@@ -90,7 +108,10 @@ export default function BooksInteractiveSection({
     const nextBookKey = selectedBook === "jibonlata" ? "neel-kuyasha" : "jibonlata";
     setSelectedBook(nextBookKey);
     setActivePoemIndex(0);
-    scrollToPoemTop();
+    scrollToPoemTop(true);
+    setTimeout(() => {
+      scrollToPoemTop(false);
+    }, 360);
   };
 
   return (

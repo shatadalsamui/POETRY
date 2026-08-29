@@ -113,13 +113,15 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${notoSerifBengali.variable} font-bengali text-[var(--color-ink)] antialiased selection:bg-[#982b1b]/20 selection:text-[#982b1b] min-h-screen pt-16`}>
+      <body className={`${notoSerifBengali.variable} font-bengali text-[var(--color-ink)] antialiased selection:bg-[#982b1b]/20 selection:text-[#982b1b] h-screen overflow-hidden`}>
         <ScrollToTopOnNavigate />
         <FilmGrain />
         <CustomCursor />
         <KashPhoolBackground />
         <TopBar />
-        {children}
+        <div id="main-scroll-container" className="h-[calc(100svh-4rem)] mt-16 overflow-y-auto relative z-10">
+          {children}
+        </div>
         <Analytics />
       </body>
     </html>
