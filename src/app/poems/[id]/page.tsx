@@ -20,7 +20,36 @@ export async function generateMetadata(
   const params = await props.params;
   const poem = await getPoemById(params.id);
   if (!poem) return { title: "কবিতা পাওয়া যায়নি" };
-  return { title: `দীপালী সামুই | ${poem.title}` };
+
+  const lines = poem.content
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const excerpt = lines.slice(0, 3).join(" / ") + "...";
+
+  return {
+    title: `${poem.title} — কবিতা | দীপালী সামুই`,
+    description: `“${excerpt}” — দীপালী সামুইয়ের রচিত কবিতা '${poem.title}'।`,
+    keywords: [
+      poem.title,
+      "দীপালী সামুই",
+      "Dipali Samui",
+      "বাংলা কবিতা",
+      poem.book ? `‘${poem.book}’ কাব্যগ্রন্থ` : "কবিতা সংকলন",
+    ],
+    openGraph: {
+      title: `${poem.title} — দীপালী সামুই`,
+      description: `“${excerpt}”`,
+      type: "article",
+      publishedTime: poem.date,
+      authors: ["দীপালী সামুই"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${poem.title} — দীপালী সামুই`,
+      description: `“${excerpt}”`,
+    },
+  };
 }
 
 export default async function PoemReadingPage(

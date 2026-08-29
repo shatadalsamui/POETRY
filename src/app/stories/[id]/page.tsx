@@ -20,7 +20,33 @@ export async function generateMetadata(
   const params = await props.params;
   const story = await getStoryById(params.id);
   if (!story) return { title: "গল্প পাওয়া যায়নি" };
-  return { title: `দীপালী সামুই | ${story.title}` };
+
+  const firstSentence = story.content.split("।")[0] + "।";
+
+  return {
+    title: `${story.title} — গল্প | দীপালী সামুই`,
+    description: `“${firstSentence}” — দীপালী সামুইয়ের রচিত গল্প '${story.title}'।`,
+    keywords: [
+      story.title,
+      "দীপালী সামুই",
+      "Dipali Samui",
+      "বাংলা গল্প",
+      "গল্প সংকলন",
+      "দামোদর",
+    ],
+    openGraph: {
+      title: `${story.title} — দীপালী সামুই`,
+      description: `“${firstSentence}”`,
+      type: "article",
+      publishedTime: story.date,
+      authors: ["দীপালী সামুই"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${story.title} — দীপালী সামুই`,
+      description: `“${firstSentence}”`,
+    },
+  };
 }
 
 export default async function StoryReadingPage(

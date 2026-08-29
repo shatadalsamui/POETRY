@@ -3,6 +3,8 @@ import storiesData from '../../data/stories.json';
 
 export interface Poem {
   id: string;
+  tag?: string;
+  bookTag?: string;
   title: string;
   date: string;
   content: string;
@@ -13,6 +15,7 @@ export interface Poem {
 
 export interface Story {
   id: string;
+  tag?: string;
   title: string;
   date: string;
   content: string;
@@ -48,14 +51,14 @@ export async function getStories(): Promise<Story[]> {
   });
 }
 
-export async function getPoemById(id: string): Promise<Poem | undefined> {
+export async function getPoemById(idOrTag: string): Promise<Poem | undefined> {
   const poems = await getPoems();
-  return poems.find((poem) => poem.id === id);
+  return poems.find((poem) => poem.id === idOrTag || poem.tag === idOrTag || poem.bookTag === idOrTag);
 }
 
-export async function getStoryById(id: string): Promise<Story | undefined> {
+export async function getStoryById(idOrTag: string): Promise<Story | undefined> {
   const stories = await getStories();
-  return stories.find((story) => story.id === id);
+  return stories.find((story) => story.id === idOrTag || story.tag === idOrTag);
 }
 
 export function getLatestPoemBatch(poems: Poem[]): number {
