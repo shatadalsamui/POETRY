@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals, getLatestPoemBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
+import ShareButton from "@/components/ui/ShareButton";
 
 export async function generateStaticParams() {
   const poems = await getPoems();
@@ -73,20 +74,27 @@ export default async function PoemReadingPage(
           </div>
         )}
 
-        {/* 1. Running Book Header */}
-        <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
-          <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
-          {poem.book ? (
-            <Link 
-              href="/books" 
-              className="italic text-[var(--color-accent-green)] hover:underline hover:text-[var(--color-accent)] transition-colors px-1 text-center font-medium"
-            >
-              ‘{poem.book}’ কাব্যগ্রন্থ
-            </Link>
-          ) : (
-            <span className="italic text-[var(--color-accent-green)] px-1 text-center font-medium">কবিতা সংকলন</span>
-          )}
-          <span className="text-[var(--color-accent-green)] font-medium shrink-0">{formatBengaliDate(poem.date)}</span>
+        {/* 1. Running Book Header (with Top-Right Share Button) */}
+        <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
+            <span className="opacity-40">•</span>
+            {poem.book ? (
+              <Link 
+                href="/books" 
+                className="italic text-[var(--color-accent-green)] hover:underline hover:text-[var(--color-accent)] transition-colors text-center font-medium"
+              >
+                ‘{poem.book}’ কাব্যগ্রন্থ
+              </Link>
+            ) : (
+              <span className="italic text-[var(--color-accent-green)] text-center font-medium">কবিতা সংকলন</span>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-3 shrink-0 ml-auto">
+            <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(poem.date)}</span>
+            <ShareButton path={`/poems/${poem.id}`} />
+          </div>
         </div>
 
         {/* 2. Poem Title */}
@@ -117,9 +125,11 @@ export default async function PoemReadingPage(
           </div>
         </div>
         
-        {/* 5. Running Book Page Footer */}
-        <div className="w-full mt-16 pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-center text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
-          <span>— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
+        {/* 5. Running Book Page Footer (with Bottom-Right Share Button) */}
+        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
+          <span className="w-20 hidden sm:inline-block" />
+          <span className="font-medium text-center">— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
+          <ShareButton path={`/poems/${poem.id}`} />
         </div>
       </article>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Divider from "@/components/ui/Divider";
 import { motion, AnimatePresence } from "framer-motion";
 import { Poem, Story } from "@/lib/data";
+import ShareButton from "@/components/ui/ShareButton";
 
 interface LandingHeroProps {
   newPoems: Poem[];
@@ -159,10 +160,8 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
                   </div>
 
                   {/* Bottom Link Prompt */}
-                  <div className="flex items-center justify-between pt-1 border-t border-[var(--color-antique-gold)]/20">
-                    <span className="text-[11px] sm:text-xs text-[var(--color-ink)]/60 font-serif">
-                      সম্পূর্ণ পড়তে ক্লিক করুন
-                    </span>
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--color-antique-gold)]/20">
+                    <ShareButton path={currentItem.href} />
                     <span className="text-[11px] sm:text-xs font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1 font-serif">
                       পড়ুন <span>&rarr;</span>
                     </span>

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Story, formatBengaliDate, getLatestStoryBatch } from "@/lib/data";
 import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
+import ShareButton from "@/components/ui/ShareButton";
 
 interface StoriesListProps {
   stories: Story[];
@@ -71,8 +72,9 @@ export default function StoriesList({ stories }: StoriesListProps) {
                 <p className="text-lg text-[var(--color-ink)]/70 leading-relaxed text-justify line-clamp-4 mb-8 font-serif">
                   {story.content}
                 </p>
-                <div className="mt-auto pt-4">
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent)] uppercase group-hover:gap-3 transition-all">
+                <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--color-antique-gold)]/25">
+                  <ShareButton path={`/stories/${story.id}`} />
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent)] uppercase group-hover:gap-3 transition-all font-serif">
                     পড়ুন <span aria-hidden="true">&rarr;</span>
                   </span>
                 </div>

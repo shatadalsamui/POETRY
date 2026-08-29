@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals, getLatestStoryBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
+import ShareButton from "@/components/ui/ShareButton";
 
 export async function generateStaticParams() {
   const stories = await getStories();
@@ -50,7 +51,7 @@ export default async function StoryReadingPage(
       <div className="mb-6 relative z-10 flex items-center justify-between">
         <Link 
           href="/stories" 
-          className="inline-flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-accent-green)] font-semibold transition-colors group text-sm sm:text-base"
+          className="inline-flex items-center gap-2 text-[var(--color-ink)] hover:text-[var(--color-accent)] font-semibold transition-colors group text-sm sm:text-base"
         >
           <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">&larr;</span> সব গল্প
         </Link>
@@ -76,11 +77,18 @@ export default async function StoryReadingPage(
           </div>
         )}
 
-        {/* 1. Running Book Header */}
-        <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
-          <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
-          <span className="italic text-[var(--color-accent)] px-1 text-center font-medium">গল্প সংকলন</span>
-          <span className="text-[var(--color-accent-green)] font-medium shrink-0">{formatBengaliDate(story.date)}</span>
+        {/* 1. Running Book Header (with Top-Right Share Button) */}
+        <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
+            <span className="opacity-40">•</span>
+            <span className="italic text-[var(--color-accent-green)] font-medium">গল্প সংকলন</span>
+          </div>
+          
+          <div className="flex items-center gap-3 shrink-0 ml-auto">
+            <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(story.date)}</span>
+            <ShareButton path={`/stories/${story.id}`} />
+          </div>
         </div>
 
         {/* 2. Story Title */}
@@ -113,9 +121,11 @@ export default async function StoryReadingPage(
           </div>
         </div>
         
-        {/* 5. Running Book Page Footer */}
-        <div className="w-full mt-16 pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-center text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
-          <span>— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
+        {/* 5. Running Book Page Footer (with Bottom-Right Share Button) */}
+        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
+          <span className="w-20 hidden sm:inline-block" />
+          <span className="font-medium text-center">— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
+          <ShareButton path={`/stories/${story.id}`} />
         </div>
       </article>
 

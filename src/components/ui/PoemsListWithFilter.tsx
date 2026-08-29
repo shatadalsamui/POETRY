@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Poem, formatBengaliDate, toBengaliNumerals, getLatestPoemBatch } from "@/lib/data";
 import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
+import ShareButton from "@/components/ui/ShareButton";
 
 interface PoemsListWithFilterProps {
   poems: Poem[];
@@ -127,11 +128,12 @@ export default function PoemsListWithFilter({ poems }: PoemsListWithFilterProps)
                 <h3 className="text-2xl font-bold mb-5 group-hover:text-[var(--color-accent)] transition-colors line-clamp-2 font-serif text-[var(--color-ink)]">
                   {poem.title}
                 </h3>
-                <p className="text-base text-[var(--color-ink)]/75 font-serif line-clamp-3 mb-8 leading-relaxed">
+                <p className="text-base text-[var(--color-ink)]/75 font-serif line-clamp-3 mb-8 leading-relaxed text-center">
                   {poem.content}
                 </p>
-                <div className="mt-auto">
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent)] uppercase group-hover:gap-3 transition-all">
+                <div className="mt-auto w-full pt-2 flex items-center justify-between border-t border-[var(--color-antique-gold)]/25">
+                  <ShareButton path={`/poems/${poem.id}`} />
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent)] uppercase group-hover:gap-3 transition-all font-serif">
                     পড়ুন <span aria-hidden="true">&rarr;</span>
                   </span>
                 </div>
