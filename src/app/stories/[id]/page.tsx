@@ -80,8 +80,6 @@ export default async function StoryReadingPage(
         {/* 1. Running Book Header (with Top-Right Share Button) */}
         <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
-            <span className="opacity-40">•</span>
             <span className="italic text-[var(--color-accent-green)] font-medium">গল্প সংকলন</span>
           </div>
           
@@ -115,7 +113,7 @@ export default async function StoryReadingPage(
 
           {/* 4. Author Signature & Stamp */}
           <div className="mt-14 pt-8 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-end self-end">
-            <span className="text-lg sm:text-xl font-serif font-semibold text-[var(--color-accent-green)] italic">
+            <span className="text-base sm:text-xl font-serif font-semibold text-[var(--color-accent)] italic">
               — দীপালী সামুই
             </span>
           </div>
@@ -134,12 +132,12 @@ export default async function StoryReadingPage(
         {prevStory ? (
           <Link
             href={`/stories/${prevStory.id}`}
-            className="flex flex-col p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent-green)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group"
+            className="flex flex-col p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group"
           >
-            <span className="text-xs font-semibold text-[var(--color-accent-green)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+            <span className="text-xs font-semibold text-[var(--color-accent)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
               <span aria-hidden="true" className="group-hover:-translate-x-1 transition-transform">←</span> পূর্ববর্তী পাতা
             </span>
-            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent-green)] transition-colors line-clamp-1">
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">
               {prevStory.title}
             </span>
           </Link>
@@ -148,12 +146,12 @@ export default async function StoryReadingPage(
         {nextStory ? (
           <Link
             href={`/stories/${nextStory.id}`}
-            className="flex flex-col items-end text-right p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent-green)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group sm:col-start-2"
+            className="flex flex-col items-end text-right p-4 sm:p-5 bg-[var(--color-vintage-ivory)] border border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)] rounded-sm shadow-sm transition-all hover:-translate-y-0.5 group sm:col-start-2"
           >
-            <span className="text-xs font-semibold text-[var(--color-accent-green)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
+            <span className="text-xs font-semibold text-[var(--color-accent)] tracking-wider uppercase flex items-center gap-1.5 mb-1">
               পরবর্তী পাতা <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">→</span>
             </span>
-            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent-green)] transition-colors line-clamp-1">
+            <span className="text-base sm:text-lg font-bold text-[var(--color-ink)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">
               {nextStory.title}
             </span>
           </Link>

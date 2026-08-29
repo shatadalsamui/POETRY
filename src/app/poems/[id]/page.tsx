@@ -77,8 +77,6 @@ export default async function PoemReadingPage(
         {/* 1. Running Book Header (with Top-Right Share Button) */}
         <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
-            <span className="opacity-40">•</span>
             {poem.book ? (
               <Link 
                 href="/books" 
