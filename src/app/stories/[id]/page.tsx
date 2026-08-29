@@ -68,16 +68,21 @@ export default async function StoryReadingPage(
         {/* Fine Crimson Edge Accent */}
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
-        {/* Absolute Top Badge for New Additions */}
-        {isNew && (
-          <div className="mb-3.5 sm:mb-4 md:mb-5">
+        {/* Top Action & Badge Row (Above running header line) */}
+        <div className="w-full flex items-center justify-between gap-3 mb-3.5 sm:mb-4 md:mb-5">
+          {isNew ? (
             <span className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full text-xs font-bold font-serif bg-[var(--color-accent)] text-white shadow-sm tracking-wider">
               ✨ নতুন গল্প
             </span>
+          ) : (
+            <span />
+          )}
+          <div className="ml-auto">
+            <ShareButton path={`/stories/${story.id}`} />
           </div>
-        )}
+        </div>
 
-        {/* 1. Running Book Header (with Top-Right Share Button) */}
+        {/* 1. Running Book Header */}
         <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <div className="flex items-center gap-2">
             <span className="italic text-[var(--color-accent-green)] font-medium">গল্প সংকলন</span>
@@ -85,7 +90,6 @@ export default async function StoryReadingPage(
           
           <div className="flex items-center gap-3 shrink-0 ml-auto">
             <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(story.date)}</span>
-            <ShareButton path={`/stories/${story.id}`} />
           </div>
         </div>
 
