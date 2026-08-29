@@ -15,7 +15,7 @@ export default async function PoemsPage() {
       <section className="relative z-10 mb-10 sm:mb-12">
         <h1 className="text-4xl font-bold tracking-tight mb-3 text-center">কবিতা</h1>
         <p className="text-center text-[var(--color-ink)] font-medium mb-6 sm:mb-8 max-w-lg mx-auto">
-          হৃদয়ের গভীর থেকে উঠে আসা কিছু অনুভূতির ছান্দিক রূপ।
+          হৃদয়ের গভীর থেকে উঠে আসা কিছু অনুভূতির প্রকাশ।
         </p>
         
         <PoemsListWithFilter poems={poems} />

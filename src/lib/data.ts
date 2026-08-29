@@ -8,6 +8,7 @@ export interface Poem {
   content: string;
   book?: string;
   bookId?: string;
+  batch?: number;
 }
 
 export interface Story {
@@ -15,19 +16,36 @@ export interface Story {
   title: string;
   date: string;
   content: string;
+  batch?: number;
 }
 
 export async function getPoems(): Promise<Poem[]> {
-  return poemsData as Poem[];
+  const poems = [...poemsData] as Poem[];
+  return poems.sort((a, b) => {
+    const aBatch = a.batch || 0;
+    const bBatch = b.batch || 0;
+    if (aBatch !== bBatch) {
+      return bBatch - aBatch; // Highest batch (নতুন কবিতা) at the absolute top
+    }
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 }
 
 export async function getPoemsByBook(bookName: string): Promise<Poem[]> {
-  const poems = await getPoems();
-  return poems.filter((poem) => poem.book === bookName || poem.bookId === bookName);
+  // Books maintain their natural chronological / printed page order (1 to 5)
+  return (poemsData as Poem[]).filter((poem) => poem.book === bookName || poem.bookId === bookName);
 }
 
 export async function getStories(): Promise<Story[]> {
-  return storiesData as Story[];
+  const stories = [...storiesData] as Story[];
+  return stories.sort((a, b) => {
+    const aBatch = a.batch || 0;
+    const bBatch = b.batch || 0;
+    if (aBatch !== bBatch) {
+      return bBatch - aBatch; // Highest batch (নতুন গল্প) at the absolute top
+    }
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 }
 
 export async function getPoemById(id: string): Promise<Poem | undefined> {
@@ -38,6 +56,14 @@ export async function getPoemById(id: string): Promise<Poem | undefined> {
 export async function getStoryById(id: string): Promise<Story | undefined> {
   const stories = await getStories();
   return stories.find((story) => story.id === id);
+}
+
+export function getLatestPoemBatch(poems: Poem[]): number {
+  return Math.max(0, ...poems.map((p) => p.batch || 0));
+}
+
+export function getLatestStoryBatch(stories: Story[]): number {
+  return Math.max(0, ...stories.map((s) => s.batch || 0));
 }
 
 const bengaliNumerals: { [key: string]: string } = {

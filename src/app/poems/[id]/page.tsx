@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals } from "@/lib/data";
+import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals, getLatestPoemBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
 
 export async function generateStaticParams() {
@@ -36,6 +36,8 @@ export default async function PoemReadingPage(
     notFound();
   }
 
+  const latestBatch = getLatestPoemBatch(poems);
+  const isNew = latestBatch > 0 && poem.batch === latestBatch;
   const prevPoem = currentIndex > 0 ? poems[currentIndex - 1] : null;
   const nextPoem = currentIndex < poems.length - 1 ? poems[currentIndex + 1] : null;
 
@@ -55,33 +57,44 @@ export default async function PoemReadingPage(
       </div>
 
       {/* The Authentic Printed Book Page Leaf */}
-      <article className="bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-3.5 py-8 sm:px-14 sm:py-14 md:p-20 relative overflow-hidden flex flex-col items-center">
+      <article className={`bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-3.5 pb-8 sm:px-14 sm:pb-14 md:px-20 md:pb-20 relative overflow-hidden flex flex-col items-center ${isNew ? 'pt-3.5 sm:pt-4 md:pt-5' : 'pt-6 sm:pt-8 md:pt-10'}`}>
         
         {/* Subtle Spine Crease along left edge simulating physical book binding */}
         <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/10 via-black/3 to-transparent pointer-events-none" />
         {/* Fine Crimson Edge Accent */}
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
+        {/* Absolute Top Badge for New Additions */}
+        {isNew && (
+          <div className="mb-3.5 sm:mb-4 md:mb-5">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full text-xs font-bold font-serif bg-[var(--color-accent)] text-white shadow-sm tracking-wider">
+              ✨ নতুন কবিতা
+            </span>
+          </div>
+        )}
+
         {/* 1. Running Book Header */}
-        <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
-          <span className="font-semibold text-[var(--color-accent)]">দীপালী সামুই</span>
+        <div className="w-full pb-4 mb-8 sm:mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
+          <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
           {poem.book ? (
             <Link 
               href="/books" 
-              className="italic hidden sm:inline text-[var(--color-accent-green)] hover:underline hover:text-[var(--color-accent)] transition-colors"
+              className="italic text-[var(--color-accent-green)] hover:underline hover:text-[var(--color-accent)] transition-colors px-1 text-center font-medium"
             >
               ‘{poem.book}’ কাব্যগ্রন্থ
             </Link>
           ) : (
-            <span className="italic hidden sm:inline">কবিতা সংকলন</span>
+            <span className="italic text-[var(--color-accent-green)] px-1 text-center font-medium">কবিতা সংকলন</span>
           )}
-          <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(poem.date)}</span>
+          <span className="text-[var(--color-accent-green)] font-medium shrink-0">{formatBengaliDate(poem.date)}</span>
         </div>
 
         {/* 2. Poem Title */}
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-[var(--color-ink)] leading-tight text-center font-serif">
-          {poem.title}
-        </h1>
+        <div className="flex flex-col items-center mb-6 sm:mb-8 text-center">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[var(--color-ink)] leading-tight font-serif">
+            {poem.title}
+          </h1>
+        </div>
 
         {/* Decorative Ornamental Divider */}
         <div className="flex items-center gap-3 mb-8 sm:mb-12 text-[var(--color-antique-gold)] opacity-75">

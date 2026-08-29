@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals } from "@/lib/data";
+import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals, getLatestStoryBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
 
 export async function generateStaticParams() {
@@ -36,6 +36,8 @@ export default async function StoryReadingPage(
     notFound();
   }
 
+  const latestBatch = getLatestStoryBatch(stories);
+  const isNew = latestBatch > 0 && story.batch === latestBatch;
   const prevStory = currentIndex > 0 ? stories[currentIndex - 1] : null;
   const nextStory = currentIndex < stories.length - 1 ? stories[currentIndex + 1] : null;
 
@@ -58,22 +60,31 @@ export default async function StoryReadingPage(
       </div>
 
       {/* The Authentic Printed Book Page Leaf */}
-      <article className="bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] p-8 sm:p-14 md:p-20 relative overflow-hidden flex flex-col">
+      <article className={`bg-[#fbf9f4] border border-[var(--color-antique-gold)]/45 rounded-xs shadow-[0_20px_50px_rgba(0,0,0,0.12),_inset_14px_0_18px_-10px_rgba(0,0,0,0.08)] px-4 pb-8 sm:px-14 sm:pb-14 md:px-20 md:pb-20 relative overflow-hidden flex flex-col items-center ${isNew ? 'pt-3.5 sm:pt-4 md:pt-5' : 'pt-6 sm:pt-8 md:pt-10'}`}>
         
         {/* Subtle Spine Crease along left edge simulating physical book binding */}
         <div className="absolute left-0 top-0 bottom-0 w-3.5 bg-gradient-to-r from-black/10 via-black/3 to-transparent pointer-events-none" />
-        {/* Fine Forest Green Edge Accent */}
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent-green)] to-[#113624] opacity-85" />
+        {/* Fine Crimson Edge Accent */}
+        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
+
+        {/* Absolute Top Badge for New Additions */}
+        {isNew && (
+          <div className="mb-3.5 sm:mb-4 md:mb-5">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full text-xs font-bold font-serif bg-[var(--color-accent)] text-white shadow-sm tracking-wider">
+              ✨ নতুন গল্প
+            </span>
+          </div>
+        )}
 
         {/* 1. Running Book Header */}
-        <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
-          <span className="font-semibold text-[var(--color-accent-green)]">দীপালী সামুই</span>
-          <span className="italic hidden sm:inline">গল্প সংকলন</span>
-          <span className="text-[var(--color-accent-green)] font-medium">{formatBengaliDate(story.date)}</span>
+        <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
+          <span className="font-semibold text-[var(--color-accent)] shrink-0">দীপালী সামুই</span>
+          <span className="italic text-[var(--color-accent)] px-1 text-center font-medium">গল্প সংকলন</span>
+          <span className="text-[var(--color-accent-green)] font-medium shrink-0">{formatBengaliDate(story.date)}</span>
         </div>
 
         {/* 2. Story Title */}
-        <header className="text-center mb-10">
+        <header className="text-center mb-10 flex flex-col items-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[var(--color-ink)] leading-tight font-serif">
             {story.title}
           </h1>

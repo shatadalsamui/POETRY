@@ -1,8 +1,7 @@
 import React from "react";
 import Divider from "@/components/ui/Divider";
-import Link from "next/link";
-import { getStories, formatBengaliDate } from "@/lib/data";
-import { StaggerContainer, StaggerItem } from "@/components/ui/Stagger";
+import { getStories } from "@/lib/data";
+import StoriesList from "@/components/ui/StoriesList";
 
 export const metadata = {
   title: "দীপালী সামুই | গল্প",
@@ -19,29 +18,7 @@ export default async function StoriesPage() {
           জীবনের নানা রঙের গল্প, যা আমাদের চারপাশের চেনা মানুষের কথা বলে।
         </p>
         
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {stories.map((story) => (
-            <StaggerItem key={story.id}>
-              <Link href={`/stories/${story.id}`} className="block h-full group">
-                <article className="h-full bg-[var(--color-vintage-ivory)]/95 backdrop-blur-md p-8 md:p-10 rounded-sm shadow-sm border border-[var(--color-antique-gold)]/40 relative overflow-hidden group-hover:shadow-[0_10px_30px_rgb(179,139,77,0.15)] transition-all duration-500 flex flex-col group-hover:-translate-y-1">
-                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent-green)] to-[#113624] opacity-80" />
-                  <span className="text-sm text-[var(--color-ink)] font-medium mb-3 block tracking-wider">
-                    {formatBengaliDate(story.date)}
-                  </span>
-                  <h3 className="text-2xl font-semibold mb-6 group-hover:text-[var(--color-accent)] transition-colors line-clamp-2">{story.title}</h3>
-                  <p className="text-lg text-[var(--color-ink)]/70 leading-relaxed text-justify line-clamp-4 mb-8">
-                    {story.content}
-                  </p>
-                  <div className="mt-auto pt-4">
-                    <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent-green)] uppercase group-hover:gap-3 transition-all">
-                      পড়ুন <span aria-hidden="true">&rarr;</span>
-                    </span>
-                  </div>
-                </article>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <StoriesList stories={stories} />
       </section>
       
       <Divider />

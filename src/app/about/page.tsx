@@ -37,9 +37,6 @@ export default function Home() {
                   <path d="M4 21C8 19 16 19 20 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-[var(--color-accent-green)] tracking-widest uppercase mt-1">
-                সাহিত্যিক ও কবি
-              </span>
             </div>
           </div>
           
