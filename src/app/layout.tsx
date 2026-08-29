@@ -15,7 +15,7 @@ const notoSerifBengali = Noto_Serif_Bengali({
 
 import { Analytics } from "@vercel/analytics/react";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dipalisamui.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

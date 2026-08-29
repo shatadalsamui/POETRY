@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getPoems, getStories } from "@/lib/data";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dipalisamui.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
   const [poems, stories] = await Promise.all([getPoems(), getStories()]);
 
