@@ -4,7 +4,7 @@ import { getPoems } from "@/lib/data";
 import PoemsListWithFilter from "@/components/ui/PoemsListWithFilter";
 
 export const metadata = {
-  title: "দীপালী সামুই | কবিতা",
+  title: "কবিতা সমগ্র",
 };
 
 export default async function PoemsPage() {

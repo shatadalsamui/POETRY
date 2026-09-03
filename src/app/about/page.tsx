@@ -2,6 +2,11 @@ import React from "react";
 import Image from "next/image";
 import Divider from "@/components/ui/Divider";
 
+export const metadata = {
+  title: "পরিচিতি ও সাহিত্য জীবন",
+  description: "বাঙালি কবি ও গল্পকার দীপালী সামুইয়ের (Depali Samui) জীবন ও সাহিত্য পরিচিতি।",
+};
+
 export default function Home() {
   return (
     <main className="relative max-w-[960px] mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-3 min-h-full flex flex-col justify-between">

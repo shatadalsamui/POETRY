@@ -3,7 +3,7 @@ import Divider from "@/components/ui/Divider";
 import LightboxGallery from "@/components/ui/LightboxGallery";
 
 export const metadata = {
-  title: "দীপালী সামুই | গ্যালারি",
+  title: "গ্যালারি",
 };
 
 export default function GalleryPage() {

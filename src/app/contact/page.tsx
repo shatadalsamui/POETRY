@@ -2,7 +2,7 @@ import React from "react";
 import Divider from "@/components/ui/Divider";
 
 export const metadata = {
-  title: "দীপালী সামুই | যোগাযোগ",
+  title: "যোগাযোগ",
 };
 
 export default function ContactPage() {

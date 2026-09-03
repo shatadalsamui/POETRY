@@ -4,7 +4,7 @@ import BooksInteractiveSection from "@/components/ui/BooksInteractiveSection";
 import { getPoemsByBook } from "@/lib/data";
 
 export const metadata = {
-  title: "দীপালী সামুই | প্রকাশিত কাব্যগ্রন্থ",
+  title: "প্রকাশিত কাব্যগ্রন্থ",
 };
 
 export default async function BooksPage() {

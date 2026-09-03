@@ -4,7 +4,7 @@ import { getStories } from "@/lib/data";
 import StoriesList from "@/components/ui/StoriesList";
 
 export const metadata = {
-  title: "দীপালী সামুই | গল্প",
+  title: "গল্প সমগ্র",
 };
 
 export default async function StoriesPage() {
