@@ -112,7 +112,9 @@ export default async function StoryReadingPage(
         {/* 1. Running Book Header */}
         <div className="w-full pb-4 mb-12 border-b border-[var(--color-antique-gold)]/40 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs sm:text-sm font-serif text-[var(--color-ink)]/70 tracking-wider">
           <div className="flex items-center gap-2">
-            <span className="italic text-[var(--color-accent-green)] font-medium">গল্প সংকলন</span>
+            <span className="italic text-[var(--color-accent-green)] font-medium">
+              {story.category ? `‘${story.category}’` : "গল্প সংকলন"}
+            </span>
           </div>
           
           <div className="flex items-center gap-3 shrink-0 ml-auto">

@@ -57,9 +57,16 @@ export default function StoriesList({ stories }: StoriesListProps) {
                 <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-80" />
                 
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                  <span className="text-sm text-[var(--color-ink)] font-medium block tracking-wider">
-                    {formatBengaliDate(story.date)}
-                  </span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-sm text-[var(--color-ink)] font-medium block tracking-wider">
+                      {formatBengaliDate(story.date)}
+                    </span>
+                    {story.category && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-serif bg-[var(--color-antique-gold)]/15 text-[var(--color-accent-green)] border border-[var(--color-antique-gold)]/35 tracking-wider">
+                        {story.category}
+                      </span>
+                    )}
+                  </div>
                   {latestBatch > 0 && story.batch === latestBatch && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-serif bg-[var(--color-accent)] text-white shadow-xs tracking-wider">
                       ✨ নতুন

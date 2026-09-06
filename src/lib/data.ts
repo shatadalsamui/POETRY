@@ -16,6 +16,7 @@ export interface Poem {
 export interface Story {
   id: string;
   tag?: string;
+  category?: string;
   title: string;
   date: string;
   content: string;
