@@ -4,7 +4,9 @@ import BooksInteractiveSection from "@/components/ui/BooksInteractiveSection";
 import { getPoemsByBook } from "@/lib/data";
 
 export const metadata = {
-  title: "প্রকাশিত কাব্যগ্রন্থ",
+  title: "প্রকাশিত কাব্যগ্রন্থ | Depali Samui | দীপালী সামুই",
+  description:
+    "বাঙালি কবি Depali Samui | দীপালী সামুইয়ের প্রকাশিত কাব্যগ্রন্থ 'জীবনলতা' ও 'নীল কুয়াশা'। Published poetry books by Depali Samui.",
 };
 
 export default async function BooksPage() {

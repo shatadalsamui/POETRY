@@ -3,8 +3,9 @@ import { getPoems, getStories, getLatestPoemBatch, getLatestStoryBatch } from "@
 import LandingHero from "@/components/ui/LandingHero";
 
 export const metadata = {
-  title: "দীপালী সামুই | সাহিত্য জগৎ",
-  description: "কবিতা আর গল্পে বোনা জীবনের কিছু খণ্ডচিত্র — দীপালী সামুইয়ের আনুষ্ঠানিক সাহিত্য ওয়েবসাইট।",
+  title: "Depali Samui | দীপালী সামুই — সাহিত্য জগৎ (কবিতা ও গল্প)",
+  description:
+    "Official literary website of Bengali author and poet Depali Samui | দীপালী সামুই। কবিতা, গল্প ও প্রকাশিত কাব্যগ্রন্থ (জীবনলতা, নীল কুয়াশা)।",
 };
 
 export default async function LandingPage() {

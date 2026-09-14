@@ -2,7 +2,9 @@ import React from "react";
 import Divider from "@/components/ui/Divider";
 
 export const metadata = {
-  title: "যোগাযোগ",
+  title: "যোগাযোগ | Depali Samui | দীপালী সামুই",
+  description:
+    "কবি ও সাহিত্যিক Depali Samui | দীপালী সামুইয়ের সাথে যোগাযোগের মাধ্যম ও ঠিকানা। Contact Bengali author Depali Samui.",
 };
 
 export default function ContactPage() {

@@ -28,8 +28,8 @@ export async function generateMetadata(
   const excerpt = lines.slice(0, 3).join(" / ") + "...";
 
   return {
-    title: `${poem.title} — কবিতা | দীপালী সামুই (Depali Samui)`,
-    description: `“${excerpt}” — দীপালী সামুইয়ের (Depali Samui) রচিত কবিতা '${poem.title}'।`,
+    title: `${poem.title} — কবিতা | Depali Samui | দীপালী সামুই`,
+    description: `“${excerpt}” — Depali Samui | দীপালী সামুইয়ের রচিত কবিতা '${poem.title}'।`,
     keywords: [
       poem.title,
       "Depali Samui",
@@ -39,15 +39,15 @@ export async function generateMetadata(
       poem.book ? `‘${poem.book}’ কাব্যগ্রন্থ` : "কবিতা সংকলন",
     ],
     openGraph: {
-      title: `${poem.title} — দীপালী সামুই (Depali Samui)`,
+      title: `${poem.title} | Depali Samui | দীপালী সামুই`,
       description: `“${excerpt}”`,
       type: "article",
       publishedTime: poem.date,
-      authors: ["দীপালী সামুই (Depali Samui)"],
+      authors: ["Depali Samui | দীপালী সামুই"],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${poem.title} — দীপালী সামুই (Depali Samui)`,
+      title: `${poem.title} | Depali Samui | দীপালী সামুই`,
       description: `“${excerpt}”`,
     },
   };

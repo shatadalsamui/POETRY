@@ -4,7 +4,9 @@ import { getStories } from "@/lib/data";
 import StoriesList from "@/components/ui/StoriesList";
 
 export const metadata = {
-  title: "গল্প সমগ্র",
+  title: "গল্প সমগ্র | Depali Samui | দীপালী সামুই",
+  description:
+    "বাঙালি কথাসাহিত্যিক Depali Samui | দীপালী সামুইয়ের ছোটগল্প ও অণুগল্প সংকলন। Bengali short stories by Depali Samui.",
 };
 
 export default async function StoriesPage() {

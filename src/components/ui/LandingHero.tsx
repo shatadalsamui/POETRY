@@ -173,14 +173,19 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
         )}
 
         {/* 3. Subtitle / Welcoming line */}
-        <motion.p 
+        <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 120, delay: 0.3 }}
-          className="text-base sm:text-lg md:text-xl text-[var(--color-ink)] font-medium max-w-2xl opacity-85 font-serif mt-3 sm:mt-4 mb-2 sm:mb-3"
+          className="mt-3 sm:mt-4 mb-2 sm:mb-3"
         >
-          দীপালী সামুইয়ের সাহিত্য জগতে আপনাকে স্বাগতম
-        </motion.p>
+          <p className="text-base sm:text-lg md:text-xl text-[var(--color-ink)] font-medium max-w-2xl opacity-85 font-serif">
+            দীপালী সামুইয়ের সাহিত্য জগতে আপনাকে স্বাগতম
+          </p>
+          <span className="block text-xs sm:text-sm font-sans tracking-wide text-[var(--color-ink)]/65 mt-0.5">
+            Official Literary Portfolio of Depali Samui
+          </span>
+        </motion.div>
 
         {/* 4. Ornamental Divider (Below welcoming line) */}
         <motion.div
@@ -201,7 +206,7 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
         transition={{ duration: 0.8, delay: 0.6, ease: "easeInOut" }}
         className="w-full text-center text-[var(--color-ink)]/75 font-medium text-xs sm:text-sm md:text-base z-10 px-4 drop-shadow-xs font-serif shrink-0 pb-1"
       >
-        &copy; {new Date().getFullYear()} দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
+        &copy; {new Date().getFullYear()} Depali Samui | দীপালী সামুই। সর্বস্বত্ব সংরক্ষিত।
       </motion.footer>
     </main>
   );

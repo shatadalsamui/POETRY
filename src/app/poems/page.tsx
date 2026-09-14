@@ -4,7 +4,9 @@ import { getPoems } from "@/lib/data";
 import PoemsListWithFilter from "@/components/ui/PoemsListWithFilter";
 
 export const metadata = {
-  title: "কবিতা সমগ্র",
+  title: "কবিতা সমগ্র | Depali Samui | দীপালী সামুই",
+  description:
+    "বাঙালি কবি Depali Samui | দীপালী সামুইয়ের স্বরচিত বাংলা কবিতা সমগ্র। Bengali poetry collection by Depali Samui.",
 };
 
 export default async function PoemsPage() {

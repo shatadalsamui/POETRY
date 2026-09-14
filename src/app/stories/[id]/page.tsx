@@ -24,8 +24,8 @@ export async function generateMetadata(
   const firstSentence = story.content.split("।")[0] + "।";
 
   return {
-    title: `${story.title} — গল্প | দীপালী সামুই (Depali Samui)`,
-    description: `“${firstSentence}” — দীপালী সামুইয়ের (Depali Samui) রচিত গল্প '${story.title}'।`,
+    title: `${story.title} — গল্প | Depali Samui | দীপালী সামুই`,
+    description: `“${firstSentence}” — Depali Samui | দীপালী সামুইয়ের রচিত গল্প '${story.title}'।`,
     keywords: [
       story.title,
       "Depali Samui",
@@ -36,15 +36,15 @@ export async function generateMetadata(
       "দামোদর",
     ],
     openGraph: {
-      title: `${story.title} — দীপালী সামুই (Depali Samui)`,
+      title: `${story.title} | Depali Samui | দীপালী সামুই`,
       description: `“${firstSentence}”`,
       type: "article",
       publishedTime: story.date,
-      authors: ["দীপালী সামুই (Depali Samui)"],
+      authors: ["Depali Samui | দীপালী সামুই"],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${story.title} — দীপালী সামুই (Depali Samui)`,
+      title: `${story.title} | Depali Samui | দীপালী সামুই`,
       description: `“${firstSentence}”`,
     },
   };

@@ -3,7 +3,9 @@ import Divider from "@/components/ui/Divider";
 import LightboxGallery from "@/components/ui/LightboxGallery";
 
 export const metadata = {
-  title: "গ্যালারি",
+  title: "গ্যালারি | Depali Samui | দীপালী সামুই",
+  description:
+    "কবি ও লেখক Depali Samui | দীপালী সামুইয়ের সাহিত্যিক জীবন, আন্তর্জাতিক কলকাতা বইমেলা ও বিভিন্ন মুহূর্তের ছবি। Photo gallery of Depali Samui.",
 };
 
 export default function GalleryPage() {

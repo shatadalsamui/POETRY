@@ -3,8 +3,9 @@ import Image from "next/image";
 import Divider from "@/components/ui/Divider";
 
 export const metadata = {
-  title: "পরিচিতি ও সাহিত্য জীবন",
-  description: "বাঙালি কবি ও গল্পকার দীপালী সামুইয়ের (Depali Samui) জীবন ও সাহিত্য পরিচিতি।",
+  title: "পরিচিতি ও সাহিত্য জীবন | Depali Samui | দীপালী সামুই",
+  description:
+    "বাঙালি কবি ও গল্পকার Depali Samui | দীপালী সামুইয়ের জীবন ও সাহিত্য পরিচিতি। Biography and literary journey of Bengali poet & author Depali Samui.",
 };
 
 export default function Home() {
@@ -24,7 +25,7 @@ export default function Home() {
             <div className="relative w-48 sm:w-52 md:w-56 shadow-xl border-3 border-white rotate-[-1.5deg] hover:rotate-0 transition-transform duration-700">
               <img
                 src="/p1.jpg"
-                alt="দীপালী সামুই"
+                alt="Depali Samui | দীপালী সামুই - কবি ও সাহিত্যিক"
                 className="w-full h-auto object-contain rounded-xs"
               />
             </div>
@@ -42,6 +43,9 @@ export default function Home() {
                   <path d="M4 21C8 19 16 19 20 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </div>
+              <span className="text-xs sm:text-sm font-sans tracking-widest text-[var(--color-antique-gold)] uppercase font-semibold mt-1">
+                Depali Samui — Poet &amp; Author
+              </span>
             </div>
           </div>
           

@@ -46,9 +46,14 @@ export default function TopBar() {
               <line x1="12" y1="2.5" x2="12" y2="10.7" stroke="var(--color-vintage-ivory)" strokeWidth="1" strokeLinecap="round" />
             </svg>
           </div>
-          <span className="font-semibold text-lg tracking-wide text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)]">
-            দীপালী সামুই
-          </span>
+          <div className="flex flex-col">
+            <span className="font-semibold text-base sm:text-lg tracking-wide text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)] leading-tight">
+              দীপালী সামুই
+            </span>
+            <span className="text-[10px] tracking-wider uppercase text-[var(--color-accent)]/80 font-sans font-medium -mt-0.5">
+              Depali Samui
+            </span>
+          </div>
         </Link>
 
         {/* Navigation Links */}
