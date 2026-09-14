@@ -150,7 +150,7 @@ export default function RootLayout({
         <CustomCursor />
         <KashPhoolBackground />
         <TopBar />
-        <div id="main-scroll-container" className="h-[calc(100svh-4rem)] mt-16 overflow-y-auto relative z-10">
+        <div id="main-scroll-container" className="h-[calc(100svh-4rem)] mt-16 overflow-y-auto relative z-10 [scrollbar-gutter:stable]">
           {children}
         </div>
         <Analytics />

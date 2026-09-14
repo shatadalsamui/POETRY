@@ -10,11 +10,10 @@ export default function PageTransition({ children }: { children: React.ReactNode
   return (
     <motion.div
       key={pathname}
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", damping: 25, stiffness: 120 }}
-      className="w-full h-full"
-      style={{ willChange: "transform, opacity" }}
+      transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
+      className="w-full min-h-full"
     >
       {children}
     </motion.div>

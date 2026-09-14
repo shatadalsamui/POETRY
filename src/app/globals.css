@@ -48,6 +48,10 @@ body {
   scrollbar-color: var(--color-antique-gold) var(--color-vintage-ivory);
 }
 
+#main-scroll-container {
+  scrollbar-gutter: stable;
+}
+
 @keyframes sway {
 
   0%,
