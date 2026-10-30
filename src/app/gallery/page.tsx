@@ -10,13 +10,14 @@ export const metadata = {
 
 export default function GalleryPage() {
   const images = [
-    { id: 2, caption: "দুর্গাপূজা ২০২৫", src: "/p2.jpg", width: 720, height: 1280 },
+    { id: 5, caption: "দুর্গাপূজা ২০২৬", src: "/p5.jpg", width: 720, height: 1280 },
+    { id: 4, caption: "কলকাতা বইমেলা ২০২৬, নোটবুক পাবলিশার্স", src: "/p3.jpg", width: 720, height: 1280 },
     { id: 3, caption: "কলকাতা বইমেলা ২০২৫, ধানসিড়ি প্রকাশনা", src: "/p4.jpg", width: 720, height: 1280 },
-    { id: 4, caption: "কলকাতা বইমেলা ২০২৬, নোটবুক প্রকাশনা", src: "/p3.jpg", width: 720, height: 1280 },
+    { id: 2, caption: "দুর্গাপূজা ২০২৫", src: "/p2.jpg", width: 720, height: 1280 },
   ];
 
   return (
-    <main className="relative max-w-5xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-4 min-h-full flex flex-col justify-between">
+    <main className="relative max-w-6xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-4 min-h-full flex flex-col justify-between">
       <section className="relative z-10 mb-4 sm:mb-5">
         <h1 className="text-4xl font-bold tracking-tight mb-2.5 text-center">গ্যালারি</h1>
         <p className="text-center text-[var(--color-ink)] font-medium mb-4 sm:mb-5 max-w-lg mx-auto">

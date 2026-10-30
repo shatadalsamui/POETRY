@@ -11,13 +11,15 @@ import BookPoemLeaf from "@/components/ui/BookPoemLeaf";
 interface BooksInteractiveSectionProps {
   jibonlataPoems: Poem[];
   neelKuyashaPoems: Poem[];
+  okhorHridoyerNibhrtoDeepPoems: Poem[];
 }
 
 export default function BooksInteractiveSection({
   jibonlataPoems,
   neelKuyashaPoems,
+  okhorHridoyerNibhrtoDeepPoems,
 }: BooksInteractiveSectionProps) {
-  // selectedBook: null | "jibonlata" | "neel-kuyasha"
+  // selectedBook: null | "jibonlata" | "neel-kuyasha" | "okhor-hridoyer-nibhrito-deep"
   const [selectedBook, setSelectedBook] = useState<string | null>(null);
   const [activePoemIndex, setActivePoemIndex] = useState<number>(0);
   const [openDrawer, setOpenDrawer] = useState<string | null>(null);
@@ -25,6 +27,22 @@ export default function BooksInteractiveSection({
   const readingContainerRef = useRef<HTMLDivElement>(null);
 
   const booksData: Record<string, BookInfo> = {
+    "okhor-hridoyer-nibhrito-deep": {
+      id: "okhor-hridoyer-nibhrito-deep",
+      title: "অক্ষর হৃদয়ের নিভৃত দীপ",
+      publisher: "নোটবুক পাবলিশার্স",
+      coverFront: "/b31.jpg",
+      coverBack: "/b32.jpg",
+      poems: okhorHridoyerNibhrtoDeepPoems,
+    },
+    "neel-kuyasha": {
+      id: "neel-kuyasha",
+      title: "নীল কুয়াশা",
+      publisher: "নোটবুক পাবলিশার্স • কলকাতা আন্তর্জাতিক বইমেলা ২০২৬",
+      coverFront: "/b21.jpg",
+      coverBack: "/b22.jpg",
+      poems: neelKuyashaPoems,
+    },
     jibonlata: {
       id: "jibonlata",
       title: "জীবনলতা",
@@ -32,14 +50,6 @@ export default function BooksInteractiveSection({
       coverFront: "/b11.jpg",
       coverBack: "/b12.jpg",
       poems: jibonlataPoems,
-    },
-    "neel-kuyasha": {
-      id: "neel-kuyasha",
-      title: "নীল কুয়াশা",
-      publisher: "নোটবুক প্রকাশনা • কলকাতা আন্তর্জাতিক বইমেলা ২০২৬",
-      coverFront: "/b21.jpg",
-      coverBack: "/b22.jpg",
-      poems: neelKuyashaPoems,
     },
   };
 
@@ -104,8 +114,13 @@ export default function BooksInteractiveSection({
     scrollToPoemTop();
   };
 
+  const bookKeys = Object.keys(booksData);
+
   const handleSwitchBook = () => {
-    const nextBookKey = selectedBook === "jibonlata" ? "neel-kuyasha" : "jibonlata";
+    if (!selectedBook) return;
+    const currentIdx = bookKeys.indexOf(selectedBook);
+    const nextIdx = (currentIdx + 1) % bookKeys.length;
+    const nextBookKey = bookKeys[nextIdx];
     setSelectedBook(nextBookKey);
     setActivePoemIndex(0);
     scrollToPoemTop(true);
@@ -114,11 +129,14 @@ export default function BooksInteractiveSection({
     }, 360);
   };
 
+  const nextBookKey = selectedBook ? bookKeys[(bookKeys.indexOf(selectedBook) + 1) % bookKeys.length] : "";
+  const otherBookTitle = nextBookKey ? booksData[nextBookKey]?.title : "";
+
   return (
     <div>
       <AnimatePresence mode="wait">
         {/* ========================================================================= */}
-        {/* 📚 VIEW 1: DEFAULT 2-BOOK SHELF VIEW (When no book is open for reading)  */}
+        {/* 📚 VIEW 1: 2-COLUMN VERTICAL GRID (JUST LIKE THE POEMS PAGE)               */}
         {/* ========================================================================= */}
         {!selectedBook && (
           <motion.div
@@ -127,8 +145,9 @@ export default function BooksInteractiveSection({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.35 }}
+            className="w-full"
           >
-            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-start">
               {Object.values(booksData).map((book) => (
                 <StaggerItem key={book.id}>
                   <BookShelfCard
@@ -181,7 +200,7 @@ export default function BooksInteractiveSection({
                 activePoemIndex={activePoemIndex}
                 onSelectPoem={handleSelectPoemFromList}
                 onSwitchBook={handleSwitchBook}
-                otherBookTitle={selectedBook === "jibonlata" ? "নীল কুয়াশা" : "জীবনলতা"}
+                otherBookTitle={otherBookTitle}
               />
 
               {/* 👉 RIGHT COLUMN: Full Sized Authentic Printed Poem Card / Leaf */}

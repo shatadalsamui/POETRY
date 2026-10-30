@@ -6,12 +6,13 @@ import { getPoemsByBook } from "@/lib/data";
 export const metadata = {
   title: "প্রকাশিত কাব্যগ্রন্থ | Depali Samui | দীপালী সামুই",
   description:
-    "বাঙালি কবি Depali Samui | দীপালী সামুইয়ের প্রকাশিত কাব্যগ্রন্থ 'জীবনলতা' ও 'নীল কুয়াশা'। Published poetry books by Depali Samui.",
+    "বাঙালি কবি Depali Samui | দীপালী সামুইয়ের প্রকাশিত কাব্যগ্রন্থ 'জীবনলতা', 'নীল কুয়াশা' ও 'অক্ষর হৃদয়ের নিভৃত দীপ'। Published poetry books by Depali Samui.",
 };
 
 export default async function BooksPage() {
   const jibonlataPoems = await getPoemsByBook("জীবনলতা");
   const neelKuyashaPoems = await getPoemsByBook("নীল কুয়াশা");
+  const okhorHridoyerNibhrtoDeepPoems = await getPoemsByBook("অক্ষর হৃদয়ের নিভৃত দীপ");
 
   return (
     <main className="relative max-w-[1380px] mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-3 min-h-full flex flex-col justify-between">
@@ -24,6 +25,7 @@ export default async function BooksPage() {
         <BooksInteractiveSection 
           jibonlataPoems={jibonlataPoems}
           neelKuyashaPoems={neelKuyashaPoems}
+          okhorHridoyerNibhrtoDeepPoems={okhorHridoyerNibhrtoDeepPoems}
         />
       </section>
       

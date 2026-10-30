@@ -61,6 +61,7 @@ export default function PoemsListWithFilter({ poems }: PoemsListWithFilterProps)
 
   const jibonlataCount = poems.filter(p => p.book === "জীবনলতা" || p.bookId === "jibonlata").length;
   const neelKuyashaCount = poems.filter(p => p.book === "নীল কুয়াশা" || p.bookId === "neel-kuyasha").length;
+  const okhorHridoyerCount = poems.filter(p => p.book === "অক্ষর হৃদয়ের নিভৃত দীপ" || p.bookId === "okhor-hridoyer-nibhrito-deep").length;
 
   return (
     <div>
@@ -78,14 +79,14 @@ export default function PoemsListWithFilter({ poems }: PoemsListWithFilterProps)
         </button>
 
         <button
-          onClick={() => handleFilterChange("জীবনলতা")}
+          onClick={() => handleFilterChange("অক্ষর হৃদয়ের নিভৃত দীপ")}
           className={`px-4 py-2 rounded-full text-xs sm:text-sm font-serif font-semibold transition-all duration-300 cursor-pointer border ${
-            selectedFilter === "জীবনলতা"
+            selectedFilter === "অক্ষর হৃদয়ের নিভৃত দীপ"
               ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-md scale-105"
               : "bg-[var(--color-vintage-ivory)]/90 text-[var(--color-ink)] border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)]"
           }`}
         >
-          📖 জীবনলতা ({toBengaliNumerals(jibonlataCount)})
+          📖 অক্ষর হৃদয়ের নিভৃত দীপ ({toBengaliNumerals(okhorHridoyerCount)})
         </button>
 
         <button
@@ -97,6 +98,17 @@ export default function PoemsListWithFilter({ poems }: PoemsListWithFilterProps)
           }`}
         >
           📖 নীল কুয়াশা ({toBengaliNumerals(neelKuyashaCount)})
+        </button>
+
+        <button
+          onClick={() => handleFilterChange("জীবনলতা")}
+          className={`px-4 py-2 rounded-full text-xs sm:text-sm font-serif font-semibold transition-all duration-300 cursor-pointer border ${
+            selectedFilter === "জীবনলতা"
+              ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-md scale-105"
+              : "bg-[var(--color-vintage-ivory)]/90 text-[var(--color-ink)] border-[var(--color-antique-gold)]/40 hover:border-[var(--color-accent)]"
+          }`}
+        >
+          📖 জীবনলতা ({toBengaliNumerals(jibonlataCount)})
         </button>
       </div>
 

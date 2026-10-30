@@ -24,14 +24,14 @@ export default function LightboxGallery({ images }: LightboxGalleryProps) {
 
   return (
     <>
-      <StaggerContainer className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-7">
         {images.map((img, index) => (
-          <StaggerItem key={img.id}>
+          <StaggerItem key={img.id} className="h-full">
             <div 
               onClick={() => setSelectedImage(img)}
-              className="relative group overflow-hidden rounded-sm bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 break-inside-avoid cursor-pointer flex flex-col"
+              className="relative group overflow-hidden rounded-sm bg-[var(--color-vintage-ivory)] border-2 border-[var(--color-antique-gold)]/40 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 cursor-pointer flex flex-col h-full"
             >
-              <div className="relative overflow-hidden cursor-zoom-in aspect-[3/4] max-h-[50vh]">
+              <div className="relative overflow-hidden cursor-zoom-in aspect-[3/4] w-full">
                 <Image 
                   src={img.src} 
                   alt={img.caption || img.title || "গ্যালারি চিত্র"}
@@ -39,14 +39,14 @@ export default function LightboxGallery({ images }: LightboxGalleryProps) {
                   height={img.height}
                   priority={index < 3}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
               </div>
 
               {/* Caption Area */}
               {img.caption && (
-                <div className="p-3.5 sm:p-4 text-center bg-[#fbf9f4] border-t border-[var(--color-antique-gold)]/30">
+                <div className="p-3.5 sm:p-4 text-center bg-[#fbf9f4] border-t border-[var(--color-antique-gold)]/30 mt-auto flex-1 flex items-center justify-center">
                   <p className="text-sm sm:text-base font-serif font-medium text-[var(--color-ink)] leading-snug">
                     {img.caption}
                   </p>

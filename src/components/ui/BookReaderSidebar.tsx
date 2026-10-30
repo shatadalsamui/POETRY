@@ -65,7 +65,7 @@ export default function BookReaderSidebar({
       {/* 5 Poem Selection Tabs */}
       <div>
         <div className="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)] mb-3 px-1 flex items-center justify-between">
-          <span>নমুনা ৫টি কবিতা:</span>
+          <span>নমুনা {toBengaliNumerals(currentBook.poems.length)}টি কবিতা:</span>
           <span className="text-[11px] text-[var(--color-ink)]/60 italic lowercase">
             {toBengaliNumerals(activePoemIndex + 1)} / {toBengaliNumerals(currentBook.poems.length)}
           </span>

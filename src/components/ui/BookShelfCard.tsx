@@ -29,7 +29,7 @@ export default function BookShelfCard({
   onSelectPoem,
 }: BookShelfCardProps) {
   return (
-    <div className="flex flex-col items-center group bg-[var(--color-vintage-ivory)] p-6 sm:p-7 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl relative overflow-hidden">
+    <div className="flex flex-col items-center group bg-[var(--color-vintage-ivory)] p-6 sm:p-7 rounded-sm border-2 border-[var(--color-antique-gold)]/40 shadow-xl relative overflow-hidden h-full">
       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-80" />
 
       {/* Front and Back Covers */}
@@ -72,7 +72,7 @@ export default function BookShelfCard({
       </div>
 
       {/* Action Buttons */}
-      <div className="w-full mt-1 pt-3.5 border-t border-[var(--color-antique-gold)]/30 relative z-10 space-y-2.5">
+      <div className="w-full mt-auto pt-3.5 border-t border-[var(--color-antique-gold)]/30 relative z-10 space-y-2.5">
         {/* Collapsible Dropdown for 5 Poems */}
         <button
           onClick={onToggleOpen}

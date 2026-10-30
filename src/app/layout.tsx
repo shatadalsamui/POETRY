@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | Depali Samui | দীপালী সামুই",
   },
   description:
-    "Official website of Bengali poet & author Depali Samui | দীপালী সামুই। কবিতা, গল্প, প্রকাশিত কাব্যগ্রন্থ (জীবনলতা, নীল কুয়াশা) এবং সাহিত্য ভাবনা।",
+    "Official website of Bengali poet & author Depali Samui | দীপালী সামুই। কবিতা, গল্প, প্রকাশিত কাব্যগ্রন্থ (জীবনলতা, নীল কুয়াশা, অক্ষর হৃদয়ের নিভৃত দীপ) এবং সাহিত্য ভাবনা।",
   keywords: [
     "Depali Samui",
     "দীপালী সামুই",
@@ -41,6 +41,8 @@ export const metadata: Metadata = {
     "বাংলা গল্প",
     "জীবনলতা",
     "নীল কুয়াশা",
+    "অক্ষর হৃদয়ের নিভৃত দীপ",
+    "Okhor Hridoyer Nibhrito Deep",
     "Bangla Kobita",
     "Bengali Poetry",
     "Bengali Literature",
@@ -99,7 +101,7 @@ const jsonLd = {
       alternateName: ["Depali Samui", "দীপালী সামুই", "Dipali Samui", "Deepali Samui"],
       givenName: "Depali",
       familyName: "Samui",
-      description: "Bengali poet and author (বাঙালি কবি ও গল্পকার). Author of 'Jibonlata' and 'Neel Kuyasha'.",
+      description: "Bengali poet and author (বাঙালি কবি ও গল্পকার). Author of 'Jibonlata', 'Neel Kuyasha', and 'Okhor Hridoyer Nibhrito Deep'.",
       jobTitle: "Author & Poet",
       gender: "Female",
       nationality: {
