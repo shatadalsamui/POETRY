@@ -16,6 +16,8 @@ interface WispItem {
   id: string;
   type: "poem" | "story";
   title: string;
+  content: string;
+  date: string;
   book?: string;
   excerpt: string[];
   href: string;
@@ -33,6 +35,8 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
         id: p.id,
         type: "poem" as const,
         title: p.title,
+        content: p.content,
+        date: p.date,
         book: p.book,
         excerpt: lines.slice(0, 2),
         href: `/poems/${p.id}`,
@@ -50,6 +54,9 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
         id: s.id,
         type: "story" as const,
         title: s.title,
+        content: s.content,
+        date: s.date,
+        book: s.category,
         excerpt: excerpt,
         href: `/stories/${s.id}`,
       };
@@ -59,10 +66,12 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
   // 2. Randomly shuffle queue on mount so poems and stories appear evenly on every reload
   const [items, setItems] = useState<WispItem[]>(allNewItems);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
-    if (allNewItems.length > 0) {
-      // True Fisher-Yates random shuffle on every reload
+    if (allNewItems.length <= 1) return;
+    const rafId = window.requestAnimationFrame(() => {
       const shuffled = [...allNewItems];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -70,11 +79,13 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
       }
       setItems(shuffled);
       setCurrentIndex(0);
-    }
+    });
+    return () => window.cancelAnimationFrame(rafId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (items.length <= 1) return;
+    if (items.length <= 1 || isPaused || isShareModalOpen) return;
 
     // Cycle to next item in the shuffled queue every 7.5 seconds
     const interval = setInterval(() => {
@@ -82,7 +93,7 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
     }, 7500);
 
     return () => clearInterval(interval);
-  }, [items.length]);
+  }, [items.length, isPaused, isShareModalOpen]);
 
   const currentItem = items[currentIndex] || items[0];
 
@@ -102,8 +113,8 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
           transition={{ type: "spring", damping: 25, stiffness: 120 }}
           className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--color-ink)] leading-snug drop-shadow-sm px-4 font-serif mb-3 sm:mb-4 max-w-5xl"
         >
-          <span className="inline-block">"কবিতা আর গল্পে বোনা জীবনের</span>{" "}
-          <span className="inline-block">কিছু খণ্ডচিত্র..."</span>
+          <span className="inline-block">&ldquo;কবিতা আর গল্পে বোনা জীবনের</span>{" "}
+          <span className="inline-block">কিছু খণ্ডচিত্র...&rdquo;</span>
         </motion.h1>
 
         {/* ========================================================================= */}
@@ -115,6 +126,8 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="w-full max-w-md sm:max-w-lg px-2 my-1 sm:my-2"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -161,7 +174,15 @@ export default function LandingHero({ newPoems, newStories }: LandingHeroProps) 
 
                   {/* Bottom Link Prompt */}
                   <div className="flex items-center justify-between pt-2 border-t border-[var(--color-antique-gold)]/20">
-                    <ShareButton path={currentItem.href} />
+                    <ShareButton
+                      path={currentItem.href}
+                      title={currentItem.title}
+                      content={currentItem.content}
+                      date={currentItem.date}
+                      book={currentItem.book}
+                      type={currentItem.type}
+                      onModalOpenChange={setIsShareModalOpen}
+                    />
                     <span className="text-[11px] sm:text-xs font-bold text-[var(--color-accent)] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1 font-serif">
                       পড়ুন <span>&rarr;</span>
                     </span>

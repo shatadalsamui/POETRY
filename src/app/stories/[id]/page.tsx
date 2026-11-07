@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals, getLatestStoryBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
+import ReadingFontControls from "@/components/ui/ReadingFontControls";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
 export async function generateStaticParams() {
   const stories = await getStories();
@@ -22,10 +25,15 @@ export async function generateMetadata(
   if (!story) return { title: "গল্প পাওয়া যায়নি" };
 
   const firstSentence = story.content.split("।")[0] + "।";
+  const canonicalUrl = `${siteUrl}/stories/${story.id}`;
+  const ogImage = `${siteUrl}/p1.jpg`;
 
   return {
-    title: `${story.title} — গল্প | Depali Samui | দীপালী সামুই`,
+    title: `${story.title} — গল্প`,
     description: `“${firstSentence}” — Depali Samui | দীপালী সামুইয়ের রচিত গল্প '${story.title}'।`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     keywords: [
       story.title,
       "Depali Samui",
@@ -38,14 +46,24 @@ export async function generateMetadata(
     openGraph: {
       title: `${story.title} | Depali Samui | দীপালী সামুই`,
       description: `“${firstSentence}”`,
+      url: canonicalUrl,
+      siteName: "Depali Samui | দীপালী সামুই",
+      locale: "bn_IN",
       type: "article",
       publishedTime: story.date,
       authors: ["Depali Samui | দীপালী সামুই"],
+      images: [
+        {
+          url: ogImage,
+          alt: `${story.title} — দীপালী সামুই`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${story.title} | Depali Samui | দীপালী সামুই`,
       description: `“${firstSentence}”`,
+      images: [ogImage],
     },
   };
 }
@@ -96,7 +114,7 @@ export default async function StoryReadingPage(
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
         {/* Top Action & Badge Row (Above running header line) */}
-        <div className="w-full flex items-center justify-between gap-3 mb-3.5 sm:mb-4 md:mb-5">
+        <div className="w-full flex flex-wrap items-center justify-between gap-2.5 mb-3.5 sm:mb-4 md:mb-5">
           {isNew ? (
             <span className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full text-xs font-bold font-serif bg-[var(--color-accent)] text-white shadow-sm tracking-wider">
               ✨ নতুন গল্প
@@ -104,8 +122,17 @@ export default async function StoryReadingPage(
           ) : (
             <span />
           )}
-          <div className="ml-auto">
-            <ShareButton path={`/stories/${story.id}`} />
+          <div className="ml-auto flex items-center gap-2">
+            <ReadingFontControls />
+            <ShareButton
+              path={`/stories/${story.id}`}
+              title={story.title}
+              content={story.content}
+              date={story.date}
+              book={story.category}
+              type="story"
+              label="ছবি ও লিঙ্ক শেয়ার"
+            />
           </div>
         </div>
 
@@ -138,7 +165,7 @@ export default async function StoryReadingPage(
         
         {/* 3. Story Paragraphs Body */}
         <div className="flex flex-col items-center w-full">
-          <div className="text-lg sm:text-xl text-[var(--color-ink)] font-medium leading-loose text-justify font-serif space-y-8 w-full selection:bg-[#113624]/15">
+          <div className="reading-story-body text-lg sm:text-xl text-[var(--color-ink)] font-medium leading-loose text-justify font-serif space-y-8 w-full selection:bg-[#113624]/15 transition-[font-size] duration-200">
             {paragraphs.map((paragraph, idx) => (
               <p key={idx}>{paragraph}</p>
             ))}
@@ -153,10 +180,18 @@ export default async function StoryReadingPage(
         </div>
         
         {/* 5. Running Book Page Footer (with Bottom-Right Share Button) */}
-        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
+        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
           <span className="w-20 hidden sm:inline-block" />
           <span className="font-medium text-center">— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
-          <ShareButton path={`/stories/${story.id}`} />
+          <ShareButton
+            path={`/stories/${story.id}`}
+            title={story.title}
+            content={story.content}
+            date={story.date}
+            book={story.category}
+            type="story"
+            label="ছবি ও লিঙ্ক শেয়ার"
+          />
         </div>
       </article>
 

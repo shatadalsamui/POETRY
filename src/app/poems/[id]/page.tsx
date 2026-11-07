@@ -4,6 +4,16 @@ import { notFound } from "next/navigation";
 import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals, getLatestPoemBatch } from "@/lib/data";
 import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
+import ReadingFontControls from "@/components/ui/ReadingFontControls";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
+
+function getPoemCoverImage(book?: string): string {
+  if (book === "জীবনলতা") return `${siteUrl}/b11.jpg`;
+  if (book === "নীল কুয়াশা") return `${siteUrl}/b21.jpg`;
+  if (book === "অক্ষর হৃদয়ের নিভৃত দীপ") return `${siteUrl}/b31.jpg`;
+  return `${siteUrl}/p1.jpg`;
+}
 
 export async function generateStaticParams() {
   const poems = await getPoems();
@@ -26,10 +36,15 @@ export async function generateMetadata(
     .map((l) => l.trim())
     .filter(Boolean);
   const excerpt = lines.slice(0, 3).join(" / ") + "...";
+  const ogImage = getPoemCoverImage(poem.book);
+  const canonicalUrl = `${siteUrl}/poems/${poem.id}`;
 
   return {
-    title: `${poem.title} — কবিতা | Depali Samui | দীপালী সামুই`,
+    title: `${poem.title} — কবিতা`,
     description: `“${excerpt}” — Depali Samui | দীপালী সামুইয়ের রচিত কবিতা '${poem.title}'।`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     keywords: [
       poem.title,
       "Depali Samui",
@@ -41,14 +56,24 @@ export async function generateMetadata(
     openGraph: {
       title: `${poem.title} | Depali Samui | দীপালী সামুই`,
       description: `“${excerpt}”`,
+      url: canonicalUrl,
+      siteName: "Depali Samui | দীপালী সামুই",
+      locale: "bn_IN",
       type: "article",
       publishedTime: poem.date,
       authors: ["Depali Samui | দীপালী সামুই"],
+      images: [
+        {
+          url: ogImage,
+          alt: `${poem.title} — দীপালী সামুই`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: `${poem.title} | Depali Samui | দীপালী সামুই`,
       description: `“${excerpt}”`,
+      images: [ogImage],
     },
   };
 }
@@ -96,7 +121,7 @@ export default async function PoemReadingPage(
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
         {/* Top Action & Badge Row (Above running header line) */}
-        <div className="w-full flex items-center justify-between gap-3 mb-3.5 sm:mb-4 md:mb-5">
+        <div className="w-full flex flex-wrap items-center justify-between gap-2.5 mb-3.5 sm:mb-4 md:mb-5">
           {isNew ? (
             <span className="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full text-xs font-bold font-serif bg-[var(--color-accent)] text-white shadow-sm tracking-wider">
               ✨ নতুন কবিতা
@@ -104,8 +129,17 @@ export default async function PoemReadingPage(
           ) : (
             <span />
           )}
-          <div className="ml-auto">
-            <ShareButton path={`/poems/${poem.id}`} />
+          <div className="ml-auto flex items-center gap-2">
+            <ReadingFontControls />
+            <ShareButton
+              path={`/poems/${poem.id}`}
+              title={poem.title}
+              content={poem.content}
+              date={poem.date}
+              book={poem.book}
+              type="poem"
+              label="ছবি ও লিঙ্ক শেয়ার"
+            />
           </div>
         </div>
 
@@ -145,7 +179,7 @@ export default async function PoemReadingPage(
         
         {/* 3. Poem Verses Body */}
         <div className="flex flex-col items-center w-full max-w-2xl px-1">
-          <div className="text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal">
+          <div className="reading-poem-body text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal transition-[font-size] duration-200">
             {poem.content}
           </div>
 
@@ -158,10 +192,18 @@ export default async function PoemReadingPage(
         </div>
         
         {/* 5. Running Book Page Footer (with Bottom-Right Share Button) */}
-        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
+        <div className="w-full mt-12 sm:mt-16 pt-4 sm:pt-6 border-t border-[var(--color-antique-gold)]/30 flex items-center justify-between gap-2 text-xs sm:text-sm font-serif text-[var(--color-ink)]/60">
           <span className="w-20 hidden sm:inline-block" />
           <span className="font-medium text-center">— পৃষ্ঠা {toBengaliNumerals(currentIndex + 1)} —</span>
-          <ShareButton path={`/poems/${poem.id}`} />
+          <ShareButton
+            path={`/poems/${poem.id}`}
+            title={poem.title}
+            content={poem.content}
+            date={poem.date}
+            book={poem.book}
+            type="poem"
+            label="ছবি ও লিঙ্ক শেয়ার"
+          />
         </div>
       </article>
 

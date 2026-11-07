@@ -16,7 +16,7 @@ export function StaggerContainer({ children, className, delay = 0.1 }: StaggerPr
       opacity: 1,
       transition: {
         staggerChildren: delay,
-        delayChildren: 0.2, // Wait for page transition to partially finish
+        delayChildren: Math.min(0.2, delay * 2),
       },
     },
   };

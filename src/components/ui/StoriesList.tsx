@@ -80,7 +80,14 @@ export default function StoriesList({ stories }: StoriesListProps) {
                   {story.content}
                 </p>
                 <div className="mt-auto pt-3 flex items-center justify-between border-t border-[var(--color-antique-gold)]/25">
-                  <ShareButton path={`/stories/${story.id}`} />
+                  <ShareButton
+                    path={`/stories/${story.id}`}
+                    title={story.title}
+                    content={story.content}
+                    date={story.date}
+                    book={story.category}
+                    type="story"
+                  />
                   <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-wider text-[var(--color-accent)] uppercase group-hover:gap-3 transition-all font-serif">
                     পড়ুন <span aria-hidden="true">&rarr;</span>
                   </span>

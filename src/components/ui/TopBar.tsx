@@ -19,7 +19,7 @@ export default function TopBar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent border-b-2 border-double border-[var(--color-antique-gold)]/40 shadow-sm transition-all duration-300">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-vintage-ivory)]/88 backdrop-blur-md border-b-2 border-double border-[var(--color-antique-gold)]/40 shadow-sm transition-all duration-300">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between relative">
         {/* Fountain Pen Motif / Logo Area */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -59,12 +59,12 @@ export default function TopBar() {
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-12">
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative font-semibold text-base md:text-lg tracking-wide transition-colors duration-300 py-2 ${isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] font-medium hover:text-[var(--color-accent)]"
+                className={`group relative font-semibold text-base md:text-lg tracking-wide transition-colors duration-300 py-2 ${isActive ? "text-[var(--color-accent-green)]" : "text-[var(--color-ink)] font-medium hover:text-[var(--color-accent)]"
                   }`}
               >
                 {link.label}
@@ -110,7 +110,7 @@ export default function TopBar() {
           >
             <nav className="flex flex-col px-6 py-4">
               {links.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
                 return (
                   <Link
                     key={link.href}
