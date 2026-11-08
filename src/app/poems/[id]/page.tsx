@@ -5,6 +5,7 @@ import { getPoemById, formatBengaliDate, getPoems, toBengaliNumerals, getLatestP
 import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
+import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
@@ -129,7 +130,14 @@ export default async function PoemReadingPage(
           ) : (
             <span />
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+            <BengaliAudioButton
+              key={poem.id}
+              title={poem.title}
+              content={poem.content}
+              book={poem.book}
+              type="poem"
+            />
             <ReadingFontControls />
             <ShareButton
               path={`/poems/${poem.id}`}

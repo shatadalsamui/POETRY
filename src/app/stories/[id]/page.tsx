@@ -5,6 +5,7 @@ import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals, getLate
 import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
+import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
@@ -122,7 +123,14 @@ export default async function StoryReadingPage(
           ) : (
             <span />
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+            <BengaliAudioButton
+              key={story.id}
+              title={story.title}
+              content={story.content}
+              book={story.category}
+              type="story"
+            />
             <ReadingFontControls />
             <ShareButton
               path={`/stories/${story.id}`}

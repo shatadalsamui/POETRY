@@ -5,6 +5,7 @@ import { Poem, toBengaliNumerals, formatBengaliDate } from "@/lib/data";
 import { BookInfo } from "./BookShelfCard";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
+import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
 
 interface BookPoemLeafProps {
   currentBook: BookInfo;
@@ -30,8 +31,15 @@ export default function BookPoemLeaf({
       {/* Fine Crimson Edge Accent */}
       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
-      {/* Top Action Row: Font Controls & Share Button */}
-      <div className="w-full flex items-center justify-end gap-2 mb-3 sm:mb-4 relative z-10">
+      {/* Top Action Row: Audio, Font Controls & Share Button */}
+      <div className="w-full flex flex-wrap items-center justify-end gap-2 mb-3 sm:mb-4 relative z-10">
+        <BengaliAudioButton
+          key={currentPoem.id}
+          title={currentPoem.title}
+          content={currentPoem.content}
+          book={currentBook.title}
+          type="poem"
+        />
         <ReadingFontControls />
         <ShareButton
           path={`/poems/${currentPoem.id}`}
