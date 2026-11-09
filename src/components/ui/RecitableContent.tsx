@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import {
   buildRecitationPlan,
   RecitableSegment,
@@ -15,6 +21,18 @@ interface RecitableContentProps {
   type: "poem" | "story";
   className?: string;
 }
+
+interface ActiveRecitationSnapshot {
+  isActive: boolean;
+  isIntroChunk: boolean;
+  activeSegmentIndex: number;
+}
+
+const SERVER_SNAPSHOT: ActiveRecitationSnapshot = {
+  isActive: false,
+  isIntroChunk: false,
+  activeSegmentIndex: -1,
+};
 
 function findActiveSegmentIndex(
   segments: RecitableSegment[],
@@ -51,30 +69,63 @@ export default function RecitableContent({
     [title, content, book, type]
   );
 
-  const playback = useSyncExternalStore(
+  const lastSnapshotRef = useRef<ActiveRecitationSnapshot>(SERVER_SNAPSHOT);
+
+  // Memoized selector: only returns a new reference when the active line
+  // or recitation status actually changes, skipping 13+ unnecessary renders/sec
+  const getSnapshot = useCallback((): ActiveRecitationSnapshot => {
+    const playback = recitationStore.getSnapshot();
+    const isActive = playback.workId === workId && playback.status !== "idle";
+    const isIntroChunk = isActive && playback.chunkIndex === 0;
+    const activeSegmentIndex = isActive
+      ? findActiveSegmentIndex(
+          segments,
+          playback.chunkIndex,
+          playback.chunkProgress
+        )
+      : -1;
+
+    const prev = lastSnapshotRef.current;
+    if (
+      prev.isActive === isActive &&
+      prev.isIntroChunk === isIntroChunk &&
+      prev.activeSegmentIndex === activeSegmentIndex
+    ) {
+      return prev;
+    }
+
+    const next: ActiveRecitationSnapshot = {
+      isActive,
+      isIntroChunk,
+      activeSegmentIndex,
+    };
+    lastSnapshotRef.current = next;
+    return next;
+  }, [workId, segments]);
+
+  const { isActive, isIntroChunk, activeSegmentIndex } = useSyncExternalStore(
     recitationStore.subscribe,
-    recitationStore.getSnapshot,
-    recitationStore.getServerSnapshot
+    getSnapshot,
+    () => SERVER_SNAPSHOT
   );
-
-  const isActive = playback.workId === workId && playback.status !== "idle";
-  const isIntroChunk = isActive && playback.chunkIndex === 0;
-
-  const activeSegmentIndex = useMemo(() => {
-    if (!isActive) return -1;
-    return findActiveSegmentIndex(
-      segments,
-      playback.chunkIndex,
-      playback.chunkProgress
-    );
-  }, [isActive, playback.chunkIndex, playback.chunkProgress, segments]);
 
   const segmentRefs = useRef<Map<number, HTMLElement>>(new Map());
 
+  // Viewport-aware smooth scroll: only scroll when the line is near screen bounds
   useEffect(() => {
     if (!isActive || activeSegmentIndex < 0) return;
     const node = segmentRefs.current.get(activeSegmentIndex);
     if (!node) return;
+
+    const rect = node.getBoundingClientRect();
+    const topSafe = 140; // below sticky top bar
+    const bottomSafe = window.innerHeight - 140;
+
+    // If node is already comfortably visible, skip scrolling to avoid stutter
+    if (rect.top >= topSafe && rect.bottom <= bottomSafe) {
+      return;
+    }
+
     node.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -128,11 +179,11 @@ export default function RecitableContent({
                 title={
                   isActive ? "এই পঙক্তি থেকে শুনতে ক্লিক করুন" : undefined
                 }
-                className={`px-3 py-0.5 rounded-sm transition-all duration-300 max-w-full ${
+                className={`px-3 py-0.5 rounded-sm transition-colors duration-200 max-w-full ${
                   isCurrent
-                    ? "bg-[var(--color-antique-gold)]/30 text-[var(--color-accent)] font-bold ring-1 ring-[var(--color-antique-gold)]/60 shadow-[0_2px_12px_rgba(152,43,27,0.08)] scale-[1.015]"
+                    ? "bg-[var(--color-antique-gold)]/25 text-[var(--color-accent)] ring-1 ring-[var(--color-antique-gold)]/55 shadow-2xs"
                     : isPast
-                    ? "opacity-75 hover:opacity-100 hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
+                    ? "opacity-80 hover:opacity-100 hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
                     : isActive
                     ? "hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
                     : ""
@@ -193,9 +244,9 @@ export default function RecitableContent({
                   title={
                     isActive ? "এই বাক্য থেকে শুনতে ক্লিক করুন" : undefined
                   }
-                  className={`transition-colors duration-300 rounded-xs ${
+                  className={`transition-colors duration-200 rounded-xs ${
                     isCurrent
-                      ? "bg-[var(--color-antique-gold)]/35 text-[var(--color-accent)] font-semibold px-1.5 py-0.5 ring-1 ring-[var(--color-antique-gold)]/60"
+                      ? "bg-[var(--color-antique-gold)]/30 text-[var(--color-accent)] px-1.5 py-0.5 ring-1 ring-[var(--color-antique-gold)]/50 shadow-2xs"
                       : isActive
                       ? "hover:bg-[var(--color-antique-gold)]/15 cursor-pointer"
                       : ""
@@ -212,4 +263,3 @@ export default function RecitableContent({
     </div>
   );
 }
-
