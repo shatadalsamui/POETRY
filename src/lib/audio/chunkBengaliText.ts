@@ -1,7 +1,7 @@
 /**
  * Normalizes a Bengali poem or story into sentence-aligned audio chunks
- * AND computes per-line / per-sentence timing windows (`startRatio`..`endRatio`)
- * so the UI highlights each spoken verse or sentence in real time.
+ * AND computes per-line / per-sentence word-boundary windows (`startRatio`..`endRatio`)
+ * so the UI highlights each spoken verse or sentence with zero lag.
  */
 
 import { normalizeBengaliForTts } from "./bengaliPronunciation";
@@ -11,8 +11,8 @@ export interface RecitableSegment {
   isBreak?: boolean;
   paragraphIndex?: number;
   chunkIndex: number; // >= 1 (chunk 0 is the title/author/book intro)
-  startRatio: number; // 0..1 within chunkIndex
-  endRatio: number; // 0..1 within chunkIndex
+  startRatio: number; // 0..1 word-index ratio within chunkIndex
+  endRatio: number; // 0..1 word-index ratio within chunkIndex
 }
 
 export interface RecitationPlan {
@@ -32,15 +32,15 @@ function normalizeSpokenText(raw: string): string {
 }
 
 /**
- * Estimates spoken duration weight for a line/sentence based on character count
- * plus natural pause weights for commas and daris (।, ?, !).
+ * Counts spoken words in a line/sentence using the same word-boundary
+ * delimiters as Microsoft Edge Neural TTS (`WordBoundary`).
  */
-function spokenWeight(text: string): number {
-  const clean = text.trim();
-  if (!clean) return 1;
-  const commaCount = (clean.match(/[,;:—-]/g) || []).length;
-  const dariCount = (clean.match(/[।?!]/g) || []).length;
-  return Math.max(1, clean.length + commaCount * 4 + dariCount * 6);
+function countSpokenWords(text: string): number {
+  const normalized = normalizeBengaliForTts(normalizeSpokenText(text));
+  const words = normalized
+    .split(/[\s,।?!;:"'“”‘’—\-()]+/)
+    .filter((w) => /[\u0980-\u09ffA-Za-z0-9]/.test(w));
+  return Math.max(1, words.length);
 }
 
 export function buildRecitationPlan(params: {
@@ -88,7 +88,7 @@ function buildPoemPlan(content: string, chunks: string[]): RecitationPlan {
   interface PendingLine {
     segmentIndex: number;
     spoken: string;
-    weight: number;
+    wordCount: number;
   }
 
   let currentLines: PendingLine[] = [];
@@ -105,12 +105,13 @@ function buildPoemPlan(content: string, chunks: string[]): RecitationPlan {
     const chunkIndex = chunks.length;
     chunks.push(combined);
 
-    const totalWeight = currentLines.reduce((sum, l) => sum + l.weight, 0) || 1;
-    let acc = 0;
+    const totalWords =
+      currentLines.reduce((sum, l) => sum + l.wordCount, 0) || 1;
+    let accWords = 0;
     for (const item of currentLines) {
-      const startRatio = acc / totalWeight;
-      acc += item.weight;
-      const endRatio = acc / totalWeight;
+      const startRatio = accWords / totalWords;
+      accWords += item.wordCount;
+      const endRatio = accWords / totalWords;
       segments[item.segmentIndex].chunkIndex = chunkIndex;
       segments[item.segmentIndex].startRatio = startRatio;
       segments[item.segmentIndex].endRatio = endRatio;
@@ -123,8 +124,6 @@ function buildPoemPlan(content: string, chunks: string[]): RecitationPlan {
   for (const rawLine of rawLines) {
     const trimmed = rawLine.trim();
     if (!trimmed) {
-      // If the previous line already ended with a full stop (।, ?, !),
-      // flush at the stanza break so stanzas stay cleanly aligned.
       if (
         currentLines.length > 0 &&
         /[।?!]$/.test(currentLines[currentLines.length - 1].spoken)
@@ -153,13 +152,10 @@ function buildPoemPlan(content: string, chunks: string[]): RecitationPlan {
     currentLines.push({
       segmentIndex: segIdx,
       spoken: trimmed,
-      weight: spokenWeight(trimmed),
+      wordCount: countSpokenWords(trimmed),
     });
     currentCharLen += trimmed.length + 1;
 
-    // Never split where there is no dari/question/exclamation mark.
-    // Once a line ends with a full sentence stop (।, ?, !) and has a full phrase,
-    // flush the sentence chunk so highlighting resyncs at every sentence boundary.
     const endsWithSentenceStop = /[।?!]["'”’)]*$/.test(trimmed);
     if (endsWithSentenceStop && currentCharLen >= 35) {
       flushChunk();
@@ -181,7 +177,7 @@ function buildStoryPlan(content: string, chunks: string[]): RecitationPlan {
   interface PendingSentence {
     segmentIndex: number;
     spoken: string;
-    weight: number;
+    wordCount: number;
   }
 
   let currentBatch: PendingSentence[] = [];
@@ -194,12 +190,13 @@ function buildStoryPlan(content: string, chunks: string[]): RecitationPlan {
       normalizeBengaliForTts(currentBatch.map((s) => s.spoken).join(" "))
     );
 
-    const totalWeight = currentBatch.reduce((sum, s) => sum + s.weight, 0) || 1;
-    let acc = 0;
+    const totalWords =
+      currentBatch.reduce((sum, s) => sum + s.wordCount, 0) || 1;
+    let accWords = 0;
     for (const item of currentBatch) {
-      const startRatio = acc / totalWeight;
-      acc += item.weight;
-      const endRatio = acc / totalWeight;
+      const startRatio = accWords / totalWords;
+      accWords += item.wordCount;
+      const endRatio = accWords / totalWords;
       segments[item.segmentIndex].chunkIndex = chunkIndex;
       segments[item.segmentIndex].startRatio = startRatio;
       segments[item.segmentIndex].endRatio = endRatio;
@@ -230,12 +227,10 @@ function buildStoryPlan(content: string, chunks: string[]): RecitationPlan {
       currentBatch.push({
         segmentIndex: segIdx,
         spoken: sentence,
-        weight: spokenWeight(sentence),
+        wordCount: countSpokenWords(sentence),
       });
       currentCharLen += sentence.length + 1;
 
-      // Flush after each complete sentence (or pair of very short sentences)
-      // so every sentence highlight is tightly locked to the voice.
       if (currentCharLen >= 35) {
         flushChunk();
       }

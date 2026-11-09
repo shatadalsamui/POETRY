@@ -2,16 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildRecitationChunks } from "@/lib/audio/chunkBengaliText";
-import {
-  recitationStore,
-  RecitationStatus,
-} from "@/lib/audio/recitationStore";
+import { recitationStore, RecitationStatus } from "@/lib/audio/recitationStore";
 import { speakWithWebSpeechFallback } from "@/lib/audio/webSpeechFallback";
 import {
   computeSpokenProgress,
   loadAudioChunk,
   preloadAudioChunk,
   resolveEffectiveDuration,
+  resolveSeekTime,
 } from "@/lib/audio/audioChunkLoader";
 
 export type { RecitationStatus };
@@ -32,7 +30,6 @@ export function useBengaliRecitation({
   type = "poem",
 }: UseBengaliRecitationParams) {
   const effectiveWorkId = workId || title;
-
   const chunks = useMemo(
     () => buildRecitationChunks({ title, content, book, type }),
     [title, content, book, type]
@@ -43,15 +40,16 @@ export function useBengaliRecitation({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fallbackDurRef = useRef<number>(1);
-  const progressTimerRef = useRef<number | null>(null);
+  const wordOffsetsRef = useRef<number[]>([]);
+  const rafIdRef = useRef<number | null>(null);
   const activeRunIdRef = useRef<number>(0);
   const statusRef = useRef<RecitationStatus>("idle");
   const chunkIndexRef = useRef<number>(0);
 
-  const clearProgressTimer = useCallback(() => {
-    if (progressTimerRef.current !== null) {
-      window.clearInterval(progressTimerRef.current);
-      progressTimerRef.current = null;
+  const stopRafLoop = useCallback(() => {
+    if (rafIdRef.current !== null) {
+      window.cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
     }
   }, []);
 
@@ -75,7 +73,7 @@ export function useBengaliRecitation({
 
   const cleanupPlayback = useCallback(() => {
     activeRunIdRef.current += 1;
-    clearProgressTimer();
+    stopRafLoop();
 
     if (audioRef.current) {
       const a = audioRef.current;
@@ -92,7 +90,7 @@ export function useBengaliRecitation({
         // ignore
       }
     }
-  }, [clearProgressTimer]);
+  }, [stopRafLoop]);
 
   const stop = useCallback(() => {
     cleanupPlayback();
@@ -128,23 +126,20 @@ export function useBengaliRecitation({
         return;
       }
 
-      clearProgressTimer();
+      stopRafLoop();
       chunkIndexRef.current = index;
       setCurrentChunkIndex(index);
-      recitationStore.setState({
-        workId: effectiveWorkId,
-        chunkIndex: index,
-        chunkProgress: initialRatio,
-      });
-
-      preloadAudioChunk(chunks[index + 1]);
-      preloadAudioChunk(chunks[index + 2]);
 
       loadAudioChunk(chunks[index])
-        .then(({ objectUrl, fallbackDuration }) => {
+        .then(({ objectUrl, fallbackDuration, wordOffsets, speechEnd }) => {
           if (activeRunIdRef.current !== runId) return;
 
+          preloadAudioChunk(chunks[index + 1]);
+          preloadAudioChunk(chunks[index + 2]);
+
           fallbackDurRef.current = fallbackDuration;
+          wordOffsetsRef.current = wordOffsets;
+
           const audio = new Audio(objectUrl);
           audio.playbackRate = 1.0;
           audioRef.current = audio;
@@ -152,17 +147,20 @@ export function useBengaliRecitation({
           const publishProgress = () => {
             if (activeRunIdRef.current !== runId) return;
             const effDur = resolveEffectiveDuration(audio, fallbackDuration);
-            recitationStore.setState({
-              workId: effectiveWorkId,
-              chunkIndex: index,
-              chunkProgress: computeSpokenProgress(audio.currentTime, effDur),
-            });
+            const prog = computeSpokenProgress(audio.currentTime, effDur, wordOffsets, speechEnd);
+            recitationStore.setState({ workId: effectiveWorkId, chunkIndex: index, chunkProgress: prog });
+          };
+
+          const tickRaf = () => {
+            if (activeRunIdRef.current !== runId || audio.paused || audio.ended) return;
+            publishProgress();
+            rafIdRef.current = window.requestAnimationFrame(tickRaf);
           };
 
           if (initialRatio > 0) {
             const applySeek = () => {
-              audio.currentTime =
-                initialRatio * resolveEffectiveDuration(audio, fallbackDuration);
+              const effDur = resolveEffectiveDuration(audio, fallbackDuration);
+              audio.currentTime = resolveSeekTime(initialRatio, effDur, wordOffsets);
             };
             if (audio.readyState >= 1) applySeek();
             else audio.onloadedmetadata = applySeek;
@@ -170,29 +168,29 @@ export function useBengaliRecitation({
 
           audio.onplaying = () => {
             if (activeRunIdRef.current !== runId) return;
-            updateStatus("playing", index);
-            clearProgressTimer();
-            progressTimerRef.current = window.setInterval(publishProgress, 75);
+            updateStatus("playing", index, initialRatio);
+            stopRafLoop();
+            rafIdRef.current = window.requestAnimationFrame(tickRaf);
           };
 
           audio.ontimeupdate = publishProgress;
 
           audio.onended = () => {
             if (activeRunIdRef.current !== runId) return;
-            clearProgressTimer();
+            stopRafLoop();
             if (index + 1 < chunks.length) playStep(index + 1, runId, 0);
             else stop();
           };
 
           audio.onerror = () => {
             if (activeRunIdRef.current !== runId) return;
-            clearProgressTimer();
+            stopRafLoop();
             runFallback(index, runId);
           };
 
           audio.play().catch(() => {
             if (activeRunIdRef.current !== runId) return;
-            clearProgressTimer();
+            stopRafLoop();
             runFallback(index, runId);
           });
         })
@@ -201,7 +199,7 @@ export function useBengaliRecitation({
           runFallback(index, runId);
         });
     },
-    [chunks, clearProgressTimer, effectiveWorkId, runFallback, stop, updateStatus]
+    [chunks, effectiveWorkId, runFallback, stop, stopRafLoop, updateStatus]
   );
 
   useEffect(() => {
@@ -210,7 +208,7 @@ export function useBengaliRecitation({
       const audio = audioRef.current;
       if (audio && chunkIndexRef.current === targetChunk) {
         const effDur = resolveEffectiveDuration(audio, fallbackDurRef.current);
-        audio.currentTime = ratio * effDur;
+        audio.currentTime = resolveSeekTime(ratio, effDur, wordOffsetsRef.current);
         recitationStore.setState({
           workId: effectiveWorkId,
           chunkIndex: targetChunk,
@@ -243,7 +241,7 @@ export function useBengaliRecitation({
     }
 
     if (status === "playing" || status === "loading") {
-      clearProgressTimer();
+      stopRafLoop();
       if (audioRef.current) audioRef.current.pause();
       else if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.pause();
@@ -269,10 +267,10 @@ export function useBengaliRecitation({
   }, [
     chunks.length,
     cleanupPlayback,
-    clearProgressTimer,
     currentChunkIndex,
     playChunkAt,
     status,
+    stopRafLoop,
     updateStatus,
   ]);
 

@@ -10,6 +10,14 @@ import {
 import { normalizeBengaliForTts } from "@/lib/audio/bengaliPronunciation";
 
 const INDIAN_BENGALI_VOICE = "bn-IN-TanishaaNeural";
+const BYTES_PER_SEC_96KBPS = 12000;
+const MP3_FRAME_BYTES = 288; // 24kHz 96kbps mono MP3 frame = 288 bytes (24ms)
+
+interface SynthesizedAudioResult {
+  mp3Buffer: Buffer;
+  wordOffsets: number[];
+  speechEnd: number;
+}
 
 function escapeXml(unsafe: string): string {
   return unsafe
@@ -20,12 +28,9 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, "&apos;");
 }
 
-function buildExpressiveSsmlBody(rawText: string): string {
-  const normalized = normalizeBengaliForTts(rawText);
-  return escapeXml(normalized);
-}
-
-function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
+function synthesizeIndianBengaliMp3(
+  text: string
+): Promise<SynthesizedAudioResult> {
   return new Promise((resolve, reject) => {
     const reqId = crypto.randomUUID().replace(/-/g, "");
     const muid = crypto.randomBytes(16).toString("hex").toUpperCase();
@@ -52,6 +57,9 @@ function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
     });
 
     const audioChunks: Buffer[] = [];
+    const wordOffsets: number[] = [];
+    let speechEnd = 0;
+
     const timeout = setTimeout(() => {
       ws.close();
       reject(new Error("TTS synthesis timed out"));
@@ -60,13 +68,14 @@ function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
     ws.on("open", () => {
       const configMsg =
         `Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n` +
-        `{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-96kbitrate-mono-mp3"}}}}`;
+        `{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"true"},"outputFormat":"audio-24khz-96kbitrate-mono-mp3"}}}}`;
       ws.send(configMsg);
 
+      const normalized = escapeXml(normalizeBengaliForTts(text));
       const ssml =
         `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="bn-IN">` +
         `<voice name="${INDIAN_BENGALI_VOICE}">` +
-        `<prosody rate="-3%">${buildExpressiveSsmlBody(text)}</prosody>` +
+        `<prosody rate="-3%">${normalized}</prosody>` +
         `</voice></speak>`;
 
       const ssmlMsg =
@@ -85,15 +94,42 @@ function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
         }
       } else {
         const msg = data.toString();
-        if (msg.includes("Path:turn.end")) {
+        if (msg.includes("Path:audio.metadata")) {
+          try {
+            const jsonPart = msg.split("\r\n\r\n")[1];
+            const parsed = JSON.parse(jsonPart);
+            for (const item of parsed.Metadata || []) {
+              if (item.Type === "WordBoundary" && item.Data) {
+                const startSec = item.Data.Offset / 1e7;
+                const durSec = (item.Data.Duration || 0) / 1e7;
+                wordOffsets.push(Number(startSec.toFixed(3)));
+                speechEnd = Math.max(speechEnd, startSec + durSec);
+              }
+            }
+          } catch {
+            // ignore metadata parse error
+          }
+        } else if (msg.includes("Path:turn.end")) {
           clearTimeout(timeout);
           ws.close();
-          const finalMp3 = Buffer.concat(audioChunks);
-          if (finalMp3.length > 0) {
-            resolve(finalMp3);
-          } else {
+          const rawMp3 = Buffer.concat(audioChunks);
+          if (rawMp3.length === 0) {
             reject(new Error("Empty audio buffer returned"));
+            return;
           }
+
+          // Trim excess trailing silence beyond speechEnd + 0.24s on exact 288-byte MP3 frame boundary
+          let finalMp3 = rawMp3;
+          if (speechEnd > 0.2) {
+            const targetBytes =
+              Math.ceil(((speechEnd + 0.24) * BYTES_PER_SEC_96KBPS) / MP3_FRAME_BYTES) *
+              MP3_FRAME_BYTES;
+            if (targetBytes > MP3_FRAME_BYTES && targetBytes < rawMp3.length) {
+              finalMp3 = rawMp3.subarray(0, targetBytes);
+            }
+          }
+
+          resolve({ mp3Buffer: finalMp3, wordOffsets, speechEnd });
         }
       }
     });
@@ -105,9 +141,6 @@ function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
   });
 }
 
-/**
- * Stateless Indian Bengali (`bn-IN-TanishaaNeural`) TTS route (`/api/tts?q=...`).
- */
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get("q")?.trim();
 
@@ -119,7 +152,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const mp3Buffer = await synthesizeIndianBengaliMp3(q);
+    const { mp3Buffer, wordOffsets, speechEnd } =
+      await synthesizeIndianBengaliMp3(q);
 
     return new NextResponse(new Uint8Array(mp3Buffer), {
       status: 200,
@@ -127,6 +161,8 @@ export async function GET(request: NextRequest) {
         "Content-Type": "audio/mpeg",
         "Content-Length": String(mp3Buffer.byteLength),
         "Accept-Ranges": "bytes",
+        "X-Word-Offsets": wordOffsets.join(","),
+        "X-Speech-End": speechEnd.toFixed(3),
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

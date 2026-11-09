@@ -46,10 +46,10 @@ function findActiveSegmentIndex(
     const seg = segments[i];
     if (seg.isBreak || seg.chunkIndex !== chunkIndex) continue;
     if (fallbackIdx === -1) fallbackIdx = i;
-    if (chunkProgress >= seg.startRatio && chunkProgress <= seg.endRatio + 0.001) {
+    if (chunkProgress >= seg.startRatio && chunkProgress < seg.endRatio) {
       return i;
     }
-    if (chunkProgress > seg.endRatio) {
+    if (chunkProgress >= seg.endRatio) {
       fallbackIdx = i;
     }
   }
@@ -71,8 +71,6 @@ export default function RecitableContent({
 
   const lastSnapshotRef = useRef<ActiveRecitationSnapshot>(SERVER_SNAPSHOT);
 
-  // Memoized selector: only returns a new reference when the active line
-  // or recitation status actually changes, skipping 13+ unnecessary renders/sec
   const getSnapshot = useCallback((): ActiveRecitationSnapshot => {
     const playback = recitationStore.getSnapshot();
     const isActive = playback.workId === workId && playback.status !== "idle";
@@ -111,25 +109,32 @@ export default function RecitableContent({
 
   const segmentRefs = useRef<Map<number, HTMLElement>>(new Map());
 
-  // Viewport-aware smooth scroll: only scroll when the line is near screen bounds
   useEffect(() => {
     if (!isActive || activeSegmentIndex < 0) return;
     const node = segmentRefs.current.get(activeSegmentIndex);
     if (!node) return;
 
     const rect = node.getBoundingClientRect();
-    const topSafe = 140; // below sticky top bar
-    const bottomSafe = window.innerHeight - 140;
+    const topSafe = 120;
+    const bottomSafe = window.innerHeight - 110;
 
-    // If node is already comfortably visible, skip scrolling to avoid stutter
     if (rect.top >= topSafe && rect.bottom <= bottomSafe) {
       return;
     }
 
-    node.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
+    const scrollContainer = document.getElementById("main-scroll-container");
+    if (scrollContainer) {
+      const targetOffset = rect.top - window.innerHeight * 0.42;
+      scrollContainer.scrollBy({
+        top: targetOffset,
+        behavior: "smooth",
+      });
+    } else {
+      node.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
   }, [isActive, activeSegmentIndex]);
 
   const setSegmentRef = (idx: number, el: HTMLElement | null) => {
@@ -143,18 +148,26 @@ export default function RecitableContent({
   if (type === "poem") {
     return (
       <div
-        className={`reading-poem-body text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal transition-[font-size] duration-200 ${className}`}
+        className={`relative reading-poem-body text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal ${className}`}
       >
         {isIntroChunk && (
-          <div className="mb-4 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--color-antique-gold)]/20 border border-[var(--color-antique-gold)]/50 text-xs sm:text-sm text-[var(--color-accent)] font-semibold animate-pulse">
-            <span>🎙️ শিরোনাম ও কবি পরিচিতি পাঠ চলছে...</span>
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-10 pointer-events-none">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[var(--color-antique-gold)]/20 border border-[var(--color-antique-gold)]/50 text-xs text-[var(--color-accent)] font-semibold">
+              🎙️ শিরোনাম ও কবি পরিচিতি পাঠ চলছে...
+            </span>
           </div>
         )}
 
         <div className="flex flex-col items-center w-full">
           {segments.map((seg, idx) => {
             if (seg.isBreak) {
-              return <div key={idx} className="h-6 sm:h-8 w-full" aria-hidden="true" />;
+              return (
+                <div
+                  key={idx}
+                  className="h-6 sm:h-8 w-full"
+                  aria-hidden="true"
+                />
+              );
             }
 
             const isCurrent = isActive && idx === activeSegmentIndex;
@@ -179,11 +192,11 @@ export default function RecitableContent({
                 title={
                   isActive ? "এই পঙক্তি থেকে শুনতে ক্লিক করুন" : undefined
                 }
-                className={`px-3 py-0.5 rounded-sm transition-colors duration-200 max-w-full ${
+                className={`px-3 py-0.5 rounded-sm transition-colors duration-75 max-w-full ${
                   isCurrent
-                    ? "bg-[var(--color-antique-gold)]/25 text-[var(--color-accent)] ring-1 ring-[var(--color-antique-gold)]/55 shadow-2xs"
+                    ? "bg-[var(--color-antique-gold)]/30 text-[var(--color-accent)] ring-1 ring-[var(--color-antique-gold)]/60"
                     : isPast
-                    ? "opacity-80 hover:opacity-100 hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
+                    ? "opacity-75 hover:opacity-100 hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
                     : isActive
                     ? "hover:bg-[var(--color-antique-gold)]/10 cursor-pointer"
                     : ""
@@ -198,7 +211,6 @@ export default function RecitableContent({
     );
   }
 
-  // Group story sentence segments back into their original paragraphs
   const paragraphsMap = new Map<
     number,
     Array<{ seg: RecitableSegment; idx: number }>
@@ -214,13 +226,13 @@ export default function RecitableContent({
 
   return (
     <div
-      className={`reading-story-body text-lg sm:text-xl text-[var(--color-ink)] font-medium leading-loose text-justify font-serif space-y-8 w-full selection:bg-[#113624]/15 transition-[font-size] duration-200 ${className}`}
+      className={`relative reading-story-body text-lg sm:text-xl text-[var(--color-ink)] font-medium leading-loose text-justify font-serif space-y-8 w-full selection:bg-[#113624]/15 ${className}`}
     >
       {isIntroChunk && (
-        <div className="flex justify-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--color-antique-gold)]/20 border border-[var(--color-antique-gold)]/50 text-xs sm:text-sm text-[var(--color-accent)] font-semibold animate-pulse">
-            <span>🎙️ শিরোনাম ও লেখিকা পরিচিতি পাঠ চলছে...</span>
-          </div>
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-10 pointer-events-none">
+          <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[var(--color-antique-gold)]/20 border border-[var(--color-antique-gold)]/50 text-xs text-[var(--color-accent)] font-semibold">
+            🎙️ শিরোনাম ও লেখিকা পরিচিতি পাঠ চলছে...
+          </span>
         </div>
       )}
 
@@ -244,9 +256,9 @@ export default function RecitableContent({
                   title={
                     isActive ? "এই বাক্য থেকে শুনতে ক্লিক করুন" : undefined
                   }
-                  className={`transition-colors duration-200 rounded-xs ${
+                  className={`transition-colors duration-75 rounded-xs ${
                     isCurrent
-                      ? "bg-[var(--color-antique-gold)]/30 text-[var(--color-accent)] px-1.5 py-0.5 ring-1 ring-[var(--color-antique-gold)]/50 shadow-2xs"
+                      ? "bg-[var(--color-antique-gold)]/30 text-[var(--color-accent)] px-1.5 py-0.5 ring-1 ring-[var(--color-antique-gold)]/55"
                       : isActive
                       ? "hover:bg-[var(--color-antique-gold)]/15 cursor-pointer"
                       : ""
