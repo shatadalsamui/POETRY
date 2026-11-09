@@ -1,19 +1,58 @@
 /**
- * Normalizes a Bengali poem or story into continuous sentences
- * and splits ONLY at true sentence-ending punctuation (।, ?, !)
- * so the voice reader never stops mid-sentence where there is no dari or comma.
+ * Normalizes a Bengali poem or story into sentence-aligned audio chunks
+ * AND computes per-line / per-sentence timing windows (`startRatio`..`endRatio`)
+ * so the UI highlights each spoken verse or sentence in real time.
  */
-export function buildRecitationChunks(params: {
+
+import { normalizeBengaliForTts } from "./bengaliPronunciation";
+
+export interface RecitableSegment {
+  text: string;
+  isBreak?: boolean;
+  paragraphIndex?: number;
+  chunkIndex: number; // >= 1 (chunk 0 is the title/author/book intro)
+  startRatio: number; // 0..1 within chunkIndex
+  endRatio: number; // 0..1 within chunkIndex
+}
+
+export interface RecitationPlan {
+  chunks: string[];
+  segments: RecitableSegment[];
+}
+
+function normalizeSpokenText(raw: string): string {
+  return raw
+    .replace(/\r?\n+/g, " ")
+    .replace(/([,;:])(?=\S)/g, "$1 ")
+    .replace(/\.{2,}\s*।?/g, "। ")
+    .replace(/([।?!])(?=\S)/g, "$1 ")
+    .replace(/\s+-\s+/g, ", ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Estimates spoken duration weight for a line/sentence based on character count
+ * plus natural pause weights for commas and daris (।, ?, !).
+ */
+function spokenWeight(text: string): number {
+  const clean = text.trim();
+  if (!clean) return 1;
+  const commaCount = (clean.match(/[,;:—-]/g) || []).length;
+  const dariCount = (clean.match(/[।?!]/g) || []).length;
+  return Math.max(1, clean.length + commaCount * 4 + dariCount * 6);
+}
+
+export function buildRecitationPlan(params: {
   title: string;
   content: string;
   book?: string;
   type?: "poem" | "story";
-}): string[] {
+}): RecitationPlan {
   const { title, content, book, type = "poem" } = params;
-  const MAX_CHUNK_CHARS = 550;
   const chunks: string[] = [];
 
-  // 1. Opening sequence: Title -> Author -> Book (if present)
+  // Chunk 0: Opening sequence (Title -> Author -> Book)
   const cleanBook = book?.trim();
   const bookPart = cleanBook
     ? type === "poem"
@@ -25,50 +64,186 @@ export function buildRecitationChunks(params: {
       : ` ${cleanBook}।`
     : "";
 
-  chunks.push(`${title}। দীপালী সামুই।${bookPart}`);
+  chunks.push(normalizeBengaliForTts(`${title}। দীপালী সামুই।${bookPart}`));
 
-  // 2. Collapse line-wraps into continuous prose so wrapped lines without
-  //    a dari (।) or comma (,) are spoken as a single unbroken sentence.
-  const normalizedBody = content
-    .replace(/\r?\n+/g, " ")
-    // Ensure a space after commas/semicolons so words like "ধ্বনি,অভিমানী" don't merge
-    .replace(/([,;:])(?=\S)/g, "$1 ")
-    // Normalize multiple dots "......।" into a clean dari
-    .replace(/\.{2,}\s*।?/g, "। ")
-    // Ensure a space after sentence-ending punctuation
-    .replace(/([।?!])(?=\S)/g, "$1 ")
-    // Clean standalone hyphens surrounded by spaces that cause unnatural pauses
-    .replace(/\s+-\s+/g, ", ")
-    .replace(/\s+/g, " ")
-    .trim();
+  if (type === "poem") {
+    return buildPoemPlan(content, chunks);
+  }
+  return buildStoryPlan(content, chunks);
+}
 
-  if (!normalizedBody) return chunks;
+export function buildRecitationChunks(params: {
+  title: string;
+  content: string;
+  book?: string;
+  type?: "poem" | "story";
+}): string[] {
+  return buildRecitationPlan(params).chunks;
+}
 
-  const bodyWithEnding = /[।?!]$/.test(normalizedBody)
-    ? normalizedBody
-    : `${normalizedBody}।`;
+function buildPoemPlan(content: string, chunks: string[]): RecitationPlan {
+  const rawLines = content.split(/\r?\n/);
+  const segments: RecitableSegment[] = [];
 
-  // 3. Split strictly at sentence boundaries (।, ?, !)
-  const sentences = bodyWithEnding
-    .split(/(?<=[।?!])\s+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
+  interface PendingLine {
+    segmentIndex: number;
+    spoken: string;
+    weight: number;
+  }
 
-  let buffer = "";
-  for (const sentence of sentences) {
-    if (!buffer) {
-      buffer = sentence;
-    } else if (buffer.length + 1 + sentence.length <= MAX_CHUNK_CHARS) {
-      buffer = `${buffer} ${sentence}`;
-    } else {
-      chunks.push(buffer);
-      buffer = sentence;
+  let currentLines: PendingLine[] = [];
+  let currentCharLen = 0;
+
+  const flushChunk = () => {
+    if (currentLines.length === 0) return;
+    let combined = normalizeBengaliForTts(
+      normalizeSpokenText(currentLines.map((l) => l.spoken).join(" "))
+    );
+    if (combined && !/[।?!]$/.test(combined)) {
+      combined = `${combined}।`;
+    }
+    const chunkIndex = chunks.length;
+    chunks.push(combined);
+
+    const totalWeight = currentLines.reduce((sum, l) => sum + l.weight, 0) || 1;
+    let acc = 0;
+    for (const item of currentLines) {
+      const startRatio = acc / totalWeight;
+      acc += item.weight;
+      const endRatio = acc / totalWeight;
+      segments[item.segmentIndex].chunkIndex = chunkIndex;
+      segments[item.segmentIndex].startRatio = startRatio;
+      segments[item.segmentIndex].endRatio = endRatio;
+    }
+
+    currentLines = [];
+    currentCharLen = 0;
+  };
+
+  for (const rawLine of rawLines) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) {
+      // If the previous line already ended with a full stop (।, ?, !),
+      // flush at the stanza break so stanzas stay cleanly aligned.
+      if (
+        currentLines.length > 0 &&
+        /[।?!]$/.test(currentLines[currentLines.length - 1].spoken)
+      ) {
+        flushChunk();
+      }
+      segments.push({
+        text: "",
+        isBreak: true,
+        chunkIndex: -1,
+        startRatio: 0,
+        endRatio: 0,
+      });
+      continue;
+    }
+
+    const segIdx = segments.length;
+    segments.push({
+      text: trimmed,
+      isBreak: false,
+      chunkIndex: 1,
+      startRatio: 0,
+      endRatio: 1,
+    });
+
+    currentLines.push({
+      segmentIndex: segIdx,
+      spoken: trimmed,
+      weight: spokenWeight(trimmed),
+    });
+    currentCharLen += trimmed.length + 1;
+
+    // Never split where there is no dari/question/exclamation mark.
+    // Once a line ends with a full sentence stop (।, ?, !) and has a full phrase,
+    // flush the sentence chunk so highlighting resyncs at every sentence boundary.
+    const endsWithSentenceStop = /[।?!]["'”’)]*$/.test(trimmed);
+    if (endsWithSentenceStop && currentCharLen >= 35) {
+      flushChunk();
     }
   }
 
-  if (buffer) {
-    chunks.push(buffer);
+  flushChunk();
+  return { chunks, segments };
+}
+
+function buildStoryPlan(content: string, chunks: string[]): RecitationPlan {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const segments: RecitableSegment[] = [];
+
+  interface PendingSentence {
+    segmentIndex: number;
+    spoken: string;
+    weight: number;
   }
 
-  return chunks;
+  let currentBatch: PendingSentence[] = [];
+  let currentCharLen = 0;
+
+  const flushChunk = () => {
+    if (currentBatch.length === 0) return;
+    const chunkIndex = chunks.length;
+    chunks.push(
+      normalizeBengaliForTts(currentBatch.map((s) => s.spoken).join(" "))
+    );
+
+    const totalWeight = currentBatch.reduce((sum, s) => sum + s.weight, 0) || 1;
+    let acc = 0;
+    for (const item of currentBatch) {
+      const startRatio = acc / totalWeight;
+      acc += item.weight;
+      const endRatio = acc / totalWeight;
+      segments[item.segmentIndex].chunkIndex = chunkIndex;
+      segments[item.segmentIndex].startRatio = startRatio;
+      segments[item.segmentIndex].endRatio = endRatio;
+    }
+
+    currentBatch = [];
+    currentCharLen = 0;
+  };
+
+  paragraphs.forEach((para, pIdx) => {
+    const cleanPara = normalizeSpokenText(para);
+    const withEnding = /[।?!]$/.test(cleanPara) ? cleanPara : `${cleanPara}।`;
+    const sentences = withEnding
+      .split(/(?<=[।?!])\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const sentence of sentences) {
+      const segIdx = segments.length;
+      segments.push({
+        text: sentence,
+        paragraphIndex: pIdx,
+        chunkIndex: 1,
+        startRatio: 0,
+        endRatio: 1,
+      });
+
+      currentBatch.push({
+        segmentIndex: segIdx,
+        spoken: sentence,
+        weight: spokenWeight(sentence),
+      });
+      currentCharLen += sentence.length + 1;
+
+      // Flush after each complete sentence (or pair of very short sentences)
+      // so every sentence highlight is tightly locked to the voice.
+      if (currentCharLen >= 35) {
+        flushChunk();
+      }
+    }
+
+    flushChunk();
+  });
+
+  flushChunk();
+  return { chunks, segments };
 }

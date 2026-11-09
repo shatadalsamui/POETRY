@@ -6,6 +6,7 @@ import { useBengaliRecitation } from "@/hooks/useBengaliRecitation";
 import { toBengaliNumerals } from "@/lib/data";
 
 interface BengaliAudioButtonProps {
+  workId?: string;
   title: string;
   content: string;
   book?: string;
@@ -13,6 +14,7 @@ interface BengaliAudioButtonProps {
 }
 
 export default function BengaliAudioButton({
+  workId,
   title,
   content,
   book,
@@ -20,6 +22,7 @@ export default function BengaliAudioButton({
 }: BengaliAudioButtonProps) {
   const { status, currentChunkIndex, totalChunks, togglePlayPause, stop } =
     useBengaliRecitation({
+      workId,
       title,
       content,
       book,

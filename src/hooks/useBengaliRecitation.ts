@@ -2,10 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildRecitationChunks } from "@/lib/audio/chunkBengaliText";
+import {
+  recitationStore,
+  RecitationStatus,
+} from "@/lib/audio/recitationStore";
+import { speakWithWebSpeechFallback } from "@/lib/audio/webSpeechFallback";
+import {
+  computeSpokenProgress,
+  loadAudioChunk,
+  preloadAudioChunk,
+  resolveEffectiveDuration,
+} from "@/lib/audio/audioChunkLoader";
 
-export type RecitationStatus = "idle" | "loading" | "playing" | "paused";
+export type { RecitationStatus };
 
 export interface UseBengaliRecitationParams {
+  workId?: string;
   title: string;
   content: string;
   book?: string;
@@ -13,11 +25,14 @@ export interface UseBengaliRecitationParams {
 }
 
 export function useBengaliRecitation({
+  workId,
   title,
   content,
   book,
   type = "poem",
 }: UseBengaliRecitationParams) {
+  const effectiveWorkId = workId || title;
+
   const chunks = useMemo(
     () => buildRecitationChunks({ title, content, book, type }),
     [title, content, book, type]
@@ -27,35 +42,47 @@ export function useBengaliRecitation({
   const [currentChunkIndex, setCurrentChunkIndex] = useState<number>(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const preloadAudioRef = useRef<HTMLAudioElement | null>(null);
-  const pauseTimerRef = useRef<number | null>(null);
+  const fallbackDurRef = useRef<number>(1);
+  const progressTimerRef = useRef<number | null>(null);
   const activeRunIdRef = useRef<number>(0);
   const statusRef = useRef<RecitationStatus>("idle");
+  const chunkIndexRef = useRef<number>(0);
 
-  const updateStatus = useCallback((next: RecitationStatus) => {
-    statusRef.current = next;
-    setStatus(next);
+  const clearProgressTimer = useCallback(() => {
+    if (progressTimerRef.current !== null) {
+      window.clearInterval(progressTimerRef.current);
+      progressTimerRef.current = null;
+    }
   }, []);
+
+  const updateStatus = useCallback(
+    (next: RecitationStatus, chunkIdx = chunkIndexRef.current, progress?: number) => {
+      statusRef.current = next;
+      setStatus(next);
+      if (next === "idle") {
+        recitationStore.reset(effectiveWorkId);
+      } else {
+        recitationStore.setState({
+          workId: effectiveWorkId,
+          status: next,
+          chunkIndex: chunkIdx,
+          ...(progress !== undefined ? { chunkProgress: progress } : {}),
+        });
+      }
+    },
+    [effectiveWorkId]
+  );
 
   const cleanupPlayback = useCallback(() => {
     activeRunIdRef.current += 1;
-
-    if (pauseTimerRef.current !== null) {
-      window.clearTimeout(pauseTimerRef.current);
-      pauseTimerRef.current = null;
-    }
+    clearProgressTimer();
 
     if (audioRef.current) {
-      audioRef.current.onended = null;
-      audioRef.current.onerror = null;
-      audioRef.current.pause();
-      audioRef.current.src = "";
+      const a = audioRef.current;
+      a.onended = a.onerror = a.ontimeupdate = a.onplaying = a.onloadedmetadata = null;
+      a.pause();
+      a.src = "";
       audioRef.current = null;
-    }
-
-    if (preloadAudioRef.current) {
-      preloadAudioRef.current.src = "";
-      preloadAudioRef.current = null;
     }
 
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -65,177 +92,196 @@ export function useBengaliRecitation({
         // ignore
       }
     }
-  }, []);
+  }, [clearProgressTimer]);
 
   const stop = useCallback(() => {
     cleanupPlayback();
+    chunkIndexRef.current = 0;
     setCurrentChunkIndex(0);
-    updateStatus("idle");
+    updateStatus("idle", 0, 0);
   }, [cleanupPlayback, updateStatus]);
 
-  // Fallback to browser Web Speech API if network/proxy fails
-  const speakWithWebSpeechFallback = useCallback(
+  const runFallback = useCallback(
     (index: number, runId: number) => {
-      if (
-        typeof window === "undefined" ||
-        !("speechSynthesis" in window) ||
-        index >= chunks.length
-      ) {
-        stop();
-        return;
-      }
-
-      const synth = window.speechSynthesis;
-      const utterance = new SpeechSynthesisUtterance(chunks[index]);
-      utterance.lang = "bn-IN";
-      utterance.rate = 0.93;
-
-      const voices = synth.getVoices();
-      const bnInVoice =
-        voices.find((v) => v.lang.toLowerCase() === "bn-in") ||
-        voices.find(
-          (v) =>
-            v.lang.toLowerCase().startsWith("bn") ||
-            v.name.toLowerCase().includes("bengali") ||
-            v.name.includes("বাংলা")
-        );
-      if (bnInVoice) utterance.voice = bnInVoice;
-
-      utterance.onstart = () => {
-        if (activeRunIdRef.current !== runId) return;
-        updateStatus("playing");
-      };
-
-      utterance.onend = () => {
-        if (activeRunIdRef.current !== runId) return;
-        if (index + 1 < chunks.length) {
-          setCurrentChunkIndex(index + 1);
-          speakWithWebSpeechFallback(index + 1, runId);
-        } else {
-          stop();
-        }
-      };
-
-      utterance.onerror = () => {
-        if (activeRunIdRef.current === runId) stop();
-      };
-
-      synth.speak(utterance);
+      speakWithWebSpeechFallback({
+        chunks,
+        index,
+        runId,
+        workId: effectiveWorkId,
+        getActiveRunId: () => activeRunIdRef.current,
+        onChunkAdvance: (nextIdx) => {
+          chunkIndexRef.current = nextIdx;
+          setCurrentChunkIndex(nextIdx);
+        },
+        onStatusChange: updateStatus,
+        onStop: stop,
+      });
     },
-    [chunks, stop, updateStatus]
+    [chunks, effectiveWorkId, stop, updateStatus]
   );
 
   const playChunkAt = useCallback(
-    function playStep(index: number, runId: number) {
+    function playStep(index: number, runId: number, initialRatio = 0) {
       if (activeRunIdRef.current !== runId) return;
       if (index >= chunks.length) {
         stop();
         return;
       }
 
+      clearProgressTimer();
+      chunkIndexRef.current = index;
       setCurrentChunkIndex(index);
-      const chunkUrl = `/api/tts?v=4&q=${encodeURIComponent(chunks[index])}`;
-
-      // Reuse preloaded audio if it matches the next chunk
-      let audio: HTMLAudioElement;
-      if (
-        preloadAudioRef.current &&
-        preloadAudioRef.current.dataset.chunkIndex === String(index)
-      ) {
-        audio = preloadAudioRef.current;
-        preloadAudioRef.current = null;
-      } else {
-        audio = new Audio(chunkUrl);
-      }
-
-      audio.playbackRate = 1.0;
-      audioRef.current = audio;
-
-      // Preload the next chunk in background for gapless stanza transitions
-      if (index + 1 < chunks.length) {
-        const nextAudio = new Audio(
-          `/api/tts?v=4&q=${encodeURIComponent(chunks[index + 1])}`
-        );
-        nextAudio.preload = "auto";
-        nextAudio.dataset.chunkIndex = String(index + 1);
-        nextAudio.load();
-        preloadAudioRef.current = nextAudio;
-      }
-
-      audio.onplaying = () => {
-        if (activeRunIdRef.current === runId) {
-          updateStatus("playing");
-        }
-      };
-
-      audio.onended = () => {
-        if (activeRunIdRef.current !== runId) return;
-        if (index + 1 < chunks.length) {
-          playStep(index + 1, runId);
-        } else {
-          stop();
-        }
-      };
-
-      audio.onerror = () => {
-        if (activeRunIdRef.current !== runId) return;
-        speakWithWebSpeechFallback(index, runId);
-      };
-
-      audio.play().catch(() => {
-        if (activeRunIdRef.current !== runId) return;
-        speakWithWebSpeechFallback(index, runId);
+      recitationStore.setState({
+        workId: effectiveWorkId,
+        chunkIndex: index,
+        chunkProgress: initialRatio,
       });
+
+      preloadAudioChunk(chunks[index + 1]);
+      preloadAudioChunk(chunks[index + 2]);
+
+      loadAudioChunk(chunks[index])
+        .then(({ objectUrl, fallbackDuration }) => {
+          if (activeRunIdRef.current !== runId) return;
+
+          fallbackDurRef.current = fallbackDuration;
+          const audio = new Audio(objectUrl);
+          audio.playbackRate = 1.0;
+          audioRef.current = audio;
+
+          const publishProgress = () => {
+            if (activeRunIdRef.current !== runId) return;
+            const effDur = resolveEffectiveDuration(audio, fallbackDuration);
+            recitationStore.setState({
+              workId: effectiveWorkId,
+              chunkIndex: index,
+              chunkProgress: computeSpokenProgress(audio.currentTime, effDur),
+            });
+          };
+
+          if (initialRatio > 0) {
+            const applySeek = () => {
+              audio.currentTime =
+                initialRatio * resolveEffectiveDuration(audio, fallbackDuration);
+            };
+            if (audio.readyState >= 1) applySeek();
+            else audio.onloadedmetadata = applySeek;
+          }
+
+          audio.onplaying = () => {
+            if (activeRunIdRef.current !== runId) return;
+            updateStatus("playing", index);
+            clearProgressTimer();
+            progressTimerRef.current = window.setInterval(publishProgress, 75);
+          };
+
+          audio.ontimeupdate = publishProgress;
+
+          audio.onended = () => {
+            if (activeRunIdRef.current !== runId) return;
+            clearProgressTimer();
+            if (index + 1 < chunks.length) playStep(index + 1, runId, 0);
+            else stop();
+          };
+
+          audio.onerror = () => {
+            if (activeRunIdRef.current !== runId) return;
+            clearProgressTimer();
+            runFallback(index, runId);
+          };
+
+          audio.play().catch(() => {
+            if (activeRunIdRef.current !== runId) return;
+            clearProgressTimer();
+            runFallback(index, runId);
+          });
+        })
+        .catch(() => {
+          if (activeRunIdRef.current !== runId) return;
+          runFallback(index, runId);
+        });
     },
-    [chunks, speakWithWebSpeechFallback, stop, updateStatus]
+    [chunks, clearProgressTimer, effectiveWorkId, runFallback, stop, updateStatus]
   );
+
+  useEffect(() => {
+    if (status === "idle") return;
+    const handleSeek = (targetChunk: number, ratio: number) => {
+      const audio = audioRef.current;
+      if (audio && chunkIndexRef.current === targetChunk) {
+        const effDur = resolveEffectiveDuration(audio, fallbackDurRef.current);
+        audio.currentTime = ratio * effDur;
+        recitationStore.setState({
+          workId: effectiveWorkId,
+          chunkIndex: targetChunk,
+          chunkProgress: ratio,
+        });
+        if (statusRef.current === "paused") {
+          updateStatus("playing", targetChunk, ratio);
+          audio.play().catch(() => {});
+        }
+        return;
+      }
+
+      cleanupPlayback();
+      const runId = activeRunIdRef.current;
+      updateStatus("loading", targetChunk, ratio);
+      playChunkAt(targetChunk, runId, ratio);
+    };
+
+    recitationStore.registerSeekHandler(handleSeek);
+    return () => recitationStore.registerSeekHandler(null);
+  }, [cleanupPlayback, effectiveWorkId, playChunkAt, status, updateStatus]);
 
   const togglePlayPause = useCallback(() => {
     if (status === "idle") {
       cleanupPlayback();
       const runId = activeRunIdRef.current;
-      updateStatus("loading");
-      playChunkAt(0, runId);
+      updateStatus("loading", 0, 0);
+      playChunkAt(0, runId, 0);
       return;
     }
 
     if (status === "playing" || status === "loading") {
-      if (pauseTimerRef.current !== null) {
-        window.clearTimeout(pauseTimerRef.current);
-        pauseTimerRef.current = null;
-      }
-      if (audioRef.current) {
-        audioRef.current.pause();
-      } else if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      clearProgressTimer();
+      if (audioRef.current) audioRef.current.pause();
+      else if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.pause();
       }
-      updateStatus("paused");
+      updateStatus("paused", chunkIndexRef.current);
       return;
     }
 
     if (status === "paused") {
-      updateStatus("playing");
+      updateStatus("playing", chunkIndexRef.current);
       if (audioRef.current && !audioRef.current.ended) {
         audioRef.current.play().catch(() => {
-          const runId = activeRunIdRef.current;
-          playChunkAt(currentChunkIndex, runId);
+          playChunkAt(chunkIndexRef.current, activeRunIdRef.current, 0);
         });
       } else {
         const nextIdx =
           audioRef.current?.ended && currentChunkIndex + 1 < chunks.length
             ? currentChunkIndex + 1
             : currentChunkIndex;
-        playChunkAt(nextIdx, activeRunIdRef.current);
+        playChunkAt(nextIdx, activeRunIdRef.current, 0);
       }
     }
-  }, [cleanupPlayback, chunks.length, currentChunkIndex, playChunkAt, status, updateStatus]);
+  }, [
+    chunks.length,
+    cleanupPlayback,
+    clearProgressTimer,
+    currentChunkIndex,
+    playChunkAt,
+    status,
+    updateStatus,
+  ]);
 
-  // Stop playback automatically when poem/story changes or component unmounts
   useEffect(() => {
     return () => {
       cleanupPlayback();
+      recitationStore.reset(effectiveWorkId);
     };
-  }, [title, content, cleanupPlayback]);
+  }, [title, content, cleanupPlayback, effectiveWorkId]);
 
   return {
     status,
@@ -245,4 +291,3 @@ export function useBengaliRecitation({
     stop,
   };
 }
-

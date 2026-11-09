@@ -6,6 +6,7 @@ import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
 import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
+import RecitableContent from "@/components/ui/RecitableContent";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
@@ -133,6 +134,7 @@ export default async function PoemReadingPage(
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <BengaliAudioButton
               key={poem.id}
+              workId={poem.id}
               title={poem.title}
               content={poem.content}
               book={poem.book}
@@ -187,9 +189,13 @@ export default async function PoemReadingPage(
         
         {/* 3. Poem Verses Body */}
         <div className="flex flex-col items-center w-full max-w-2xl px-1">
-          <div className="reading-poem-body text-[15px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.4] sm:leading-[2.8] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal transition-[font-size] duration-200">
-            {poem.content}
-          </div>
+          <RecitableContent
+            workId={poem.id}
+            title={poem.title}
+            content={poem.content}
+            book={poem.book}
+            type="poem"
+          />
 
           {/* 4. Author Signature & Stamp */}
           <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-end self-end">

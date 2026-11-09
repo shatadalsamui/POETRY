@@ -7,6 +7,7 @@ import {
   SEC_MS_GEC_VERSION,
   TRUSTED_CLIENT_TOKEN,
 } from "@/lib/audio/edgeDrm";
+import { normalizeBengaliForTts } from "@/lib/audio/bengaliPronunciation";
 
 const INDIAN_BENGALI_VOICE = "bn-IN-TanishaaNeural";
 
@@ -17,6 +18,11 @@ function escapeXml(unsafe: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function buildExpressiveSsmlBody(rawText: string): string {
+  const normalized = normalizeBengaliForTts(rawText);
+  return escapeXml(normalized);
 }
 
 function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
@@ -54,13 +60,13 @@ function synthesizeIndianBengaliMp3(text: string): Promise<Buffer> {
     ws.on("open", () => {
       const configMsg =
         `Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n` +
-        `{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}`;
+        `{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-96kbitrate-mono-mp3"}}}}`;
       ws.send(configMsg);
 
       const ssml =
         `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="bn-IN">` +
         `<voice name="${INDIAN_BENGALI_VOICE}">` +
-        `<prosody rate="-7%" pitch="+0Hz">${escapeXml(text)}</prosody>` +
+        `<prosody rate="-3%">${buildExpressiveSsmlBody(text)}</prosody>` +
         `</voice></speak>`;
 
       const ssmlMsg =
@@ -119,6 +125,8 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
+        "Content-Length": String(mp3Buffer.byteLength),
+        "Accept-Ranges": "bytes",
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
