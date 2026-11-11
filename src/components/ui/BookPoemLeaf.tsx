@@ -5,8 +5,6 @@ import { Poem, toBengaliNumerals, formatBengaliDate } from "@/lib/data";
 import { BookInfo } from "./BookShelfCard";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
-import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
-import RecitableContent from "@/components/ui/RecitableContent";
 
 interface BookPoemLeafProps {
   currentBook: BookInfo;
@@ -32,16 +30,8 @@ export default function BookPoemLeaf({
       {/* Fine Crimson Edge Accent */}
       <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--color-accent)] to-[#6a1e12] opacity-85" />
 
-      {/* Top Action Row: Audio, Font Controls & Share Button */}
+      {/* Top Action Row: Font Controls & Share Button */}
       <div className="w-full flex flex-wrap items-center justify-end gap-2 mb-3 sm:mb-4 relative z-10">
-        <BengaliAudioButton
-          key={currentPoem.id}
-          workId={currentPoem.id}
-          title={currentPoem.title}
-          content={currentPoem.content}
-          book={currentBook.title}
-          type="poem"
-        />
         <ReadingFontControls />
         <ShareButton
           path={`/poems/${currentPoem.id}`}
@@ -79,14 +69,9 @@ export default function BookPoemLeaf({
 
       {/* 3. Poem Verses Body */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-2 my-4">
-        <RecitableContent
-          workId={currentPoem.id}
-          title={currentPoem.title}
-          content={currentPoem.content}
-          book={currentBook.title}
-          type="poem"
-          className="text-[16px] leading-[2.6] sm:leading-[2.9]"
-        />
+        <div className="reading-poem-body text-[16px] sm:text-xl md:text-2xl text-[var(--color-ink)] font-medium leading-[2.6] sm:leading-[2.9] whitespace-pre-wrap font-serif w-full text-center tracking-normal selection:bg-[#982b1b]/15 break-normal transition-[font-size] duration-200">
+          {currentPoem.content}
+        </div>
 
         {/* Author Signature Block */}
         <div className="mt-12 pt-4 border-t border-[var(--color-antique-gold)]/25 flex flex-col items-end self-end">

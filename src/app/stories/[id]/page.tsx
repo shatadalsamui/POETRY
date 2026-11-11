@@ -5,8 +5,6 @@ import { getStoryById, formatBengaliDate, getStories, toBengaliNumerals, getLate
 import Divider from "@/components/ui/Divider";
 import ShareButton from "@/components/ui/ShareButton";
 import ReadingFontControls from "@/components/ui/ReadingFontControls";
-import BengaliAudioButton from "@/components/ui/BengaliAudioButton";
-import RecitableContent from "@/components/ui/RecitableContent";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://depalisamui.vercel.app";
 
@@ -89,6 +87,9 @@ export default async function StoryReadingPage(
   const prevStory = currentIndex > 0 ? stories[currentIndex - 1] : null;
   const nextStory = currentIndex < stories.length - 1 ? stories[currentIndex + 1] : null;
 
+  // Simple splitting by double newline to create paragraphs
+  const paragraphs = story.content.split('\n\n').filter(p => p.trim() !== '');
+
   return (
     <main className="relative min-h-screen max-w-4xl mx-auto px-4 sm:px-8 pt-8 pb-16 md:pt-10 md:pb-20">
       {/* Top Breadcrumb Navigation */}
@@ -122,14 +123,6 @@ export default async function StoryReadingPage(
             <span />
           )}
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-            <BengaliAudioButton
-              key={story.id}
-              workId={story.id}
-              title={story.title}
-              content={story.content}
-              book={story.category}
-              type="story"
-            />
             <ReadingFontControls />
             <ShareButton
               path={`/stories/${story.id}`}
@@ -172,13 +165,11 @@ export default async function StoryReadingPage(
         
         {/* 3. Story Paragraphs Body */}
         <div className="flex flex-col items-center w-full">
-          <RecitableContent
-            workId={story.id}
-            title={story.title}
-            content={story.content}
-            book={story.category}
-            type="story"
-          />
+          <div className="reading-story-body text-lg sm:text-xl text-[var(--color-ink)] font-medium leading-loose text-justify font-serif space-y-8 w-full selection:bg-[#113624]/15 transition-[font-size] duration-200">
+            {paragraphs.map((paragraph, idx) => (
+              <p key={idx}>{paragraph}</p>
+            ))}
+          </div>
 
           {/* 4. Author Signature & Stamp */}
           <div className="mt-14 pt-8 border-t border-[var(--color-antique-gold)]/30 flex flex-col items-end self-end">
